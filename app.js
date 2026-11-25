@@ -513,6 +513,7 @@ function growDoku(showLine) {
   span.className = "doku-plant";
   span.innerHTML = dokuPlant();
   f.appendChild(span);
+  attachPluck(span);
   if (showLine) {
     const v = document.getElementById("lse-voice");
     if (v) { v.textContent = "（どこからか声がする）「" + LSE_LINES[dokuLineIdx % LSE_LINES.length] + "」"; dokuLineIdx++; }
@@ -526,27 +527,156 @@ function startDoku() {
   sceneTimer = setInterval(() => growDoku(true), 8000);
 }
 
+// ---- v5: ドラッグ操作（小道具共通・採点には影響しない） ----
+let wormDragNoted = false;
+let dokuPluckSink = null;
+const WORM_DRAG_LINES = [
+  "……道具を手に取ると、まず『何に使うものか』から考えるんだな。その入り方、用途から入るのはLIIの癖として分類できる。こちらは構造から入る。",
+  "操作して確かめる、か。認知の検証手順としては正しい。……ただ今の動かし方、本来の用途の定義からは外れている。記録しておく。",
+  "大抵の観察対象は『どう動くか』から入る。『何に使うものか』から入るのは少数派だ。……面白いサンプルだと思う。🐛"
+];
+function noteWormDrag(qkey) {
+  if (wormDragNoted) return;
+  if (qkey !== "beta" && qkey !== "phi") return;
+  const bubble = document.getElementById("char-bubble");
+  if (!bubble) return;
+  wormDragNoted = true;
+  bubble.textContent = WORM_DRAG_LINES[Math.floor(Math.random() * WORM_DRAG_LINES.length)];
+}
+// Pointer Events ベースのドラッグ。mode:"transform"（デフォルト）は translate、
+// mode:"position" は left/top を動かす。タップ（従来の click）は、ドラッグ後の click を握りつぶすことで両立させる。
+function makeDraggable(el, opts) {
+  opts = opts || {};
+  if (!el) return;
+  el.classList.add("draggable");
+  const mode = opts.mode || "transform";
+  let startX = 0, startY = 0, baseX = 0, baseY = 0, curX = 0, curY = 0;
+  let active = false, moved = false, hookFired = false;
+  let minDX = -Infinity, maxDX = Infinity, minDY = -Infinity, maxDY = Infinity;
+  function render() {
+    if (mode === "position") {
+      el.style.left = curX + "px"; el.style.top = curY + "px";
+    } else if (opts.render) {
+      opts.render(el, curX, curY, active);
+    } else {
+      el.style.transform = "translate(" + curX + "px," + curY + "px)" + (active ? " scale(1.06)" : "");
+    }
+  }
+  el.addEventListener("pointerdown", (e) => {
+    active = true; moved = false;
+    startX = e.clientX; startY = e.clientY;
+    if (mode === "position") { baseX = el.offsetLeft; baseY = el.offsetTop; }
+    else { baseX = curX; baseY = curY; }
+    const container = opts.container || el.parentElement;
+    if (container) {
+      const cr = container.getBoundingClientRect(), er = el.getBoundingClientRect();
+      minDX = cr.left - er.left; maxDX = cr.right - er.right;
+      minDY = cr.top - er.top; maxDY = cr.bottom - er.bottom;
+    }
+    try { el.setPointerCapture(e.pointerId); } catch (err) {}
+    el.classList.add("dragging");
+  });
+  el.addEventListener("pointermove", (e) => {
+    if (!active) return;
+    let dx = e.clientX - startX, dy = e.clientY - startY;
+    if (!moved && Math.hypot(dx, dy) > 6) {
+      moved = true;
+      if (!hookFired) { hookFired = true; if (opts.onFirstDrag) opts.onFirstDrag(el); }
+      if (opts.onDragStart) opts.onDragStart(el);
+    }
+    if (!moved) return;
+    dx = Math.max(minDX, Math.min(maxDX, dx));
+    dy = Math.max(minDY, Math.min(maxDY, dy));
+    curX = baseX + dx; curY = baseY + dy;
+    render();
+    if (opts.onDrag) opts.onDrag(el, curX, curY);
+  });
+  function endDrag() {
+    if (!active) return;
+    active = false;
+    el.classList.remove("dragging");
+    if (moved) {
+      el._lastDragEnd = Date.now();
+      el._suppressClickUntil = Date.now() + 400;
+      render();
+      if (opts.onDragEnd) opts.onDragEnd(el);
+    }
+  }
+  el.addEventListener("pointerup", endDrag);
+  el.addEventListener("pointercancel", endDrag);
+  el.addEventListener("click", (e) => {
+    if (el._suppressClickUntil && Date.now() < el._suppressClickUntil) {
+      e.stopImmediatePropagation(); e.preventDefault();
+      el._suppressClickUntil = 0;
+    }
+  }, true);
+}
+// δ・Ψ：ドクダミの株をドラッグで引き抜く（抜いても根からまた増える）
+function attachPluck(span) {
+  span.classList.add("draggable");
+  let sx = 0, sy = 0, active = false, moved = false, pluck = false;
+  span.addEventListener("pointerdown", (e) => {
+    active = true; moved = false; pluck = false;
+    sx = e.clientX; sy = e.clientY;
+    try { span.setPointerCapture(e.pointerId); } catch (err) {}
+    span.classList.add("dragging");
+  });
+  span.addEventListener("pointermove", (e) => {
+    if (!active) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.hypot(dx, dy) > 5) moved = true;
+    if (!moved) return;
+    span.style.transform = "translate(" + dx + "px," + dy + "px) rotate(" + (dx * 0.15) + "deg)";
+    pluck = dy < -34;
+    span.classList.toggle("pluck-ready", pluck);
+  });
+  function endPluck() {
+    if (!active) return;
+    active = false;
+    span.classList.remove("dragging", "pluck-ready");
+    if (pluck) {
+      span.classList.add("plucked");
+      span.style.transform = "translateY(-84px) rotate(24deg)";
+      span.style.opacity = "0";
+      dokuCount = Math.max(0, dokuCount - 1);
+      if (dokuPluckSink) dokuPluckSink();
+      setTimeout(() => { span.remove(); }, 300);
+      setTimeout(() => { if (document.getElementById("doku-field")) growDoku(true); }, 750);
+    } else {
+      span.style.transition = "transform .25s cubic-bezier(.34,1.56,.64,1)";
+      span.style.transform = "";
+      setTimeout(() => { span.style.transition = ""; }, 280);
+    }
+  }
+  span.addEventListener("pointerup", endPluck);
+  span.addEventListener("pointercancel", endPluck);
+}
+
 // ---- 場面の小道具（遊び要素・採点には影響しない） ----
 let propTimeout = null;
-function teaSVG() {
-  return '<svg viewBox="0 0 200 110" class="tea-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-    '<ellipse cx="70" cy="68" rx="34" ry="24" fill="#8a5a44"/>' +
-    '<path d="M40 60l-18 8 7 9 15-7z" fill="#8a5a44"/>' +
-    '<path d="M102 54a17 17 0 0 1 0 28" fill="none" stroke="#8a5a44" stroke-width="6"/>' +
-    '<ellipse cx="70" cy="46" rx="14" ry="5" fill="#6e4634"/><circle cx="70" cy="41" r="4" fill="#6e4634"/>' +
-    '<path d="M140 80h44l-6 19a6 6 0 0 1-6 5h-20a6 6 0 0 1-6-5z" fill="#fdfbf4" stroke="#b9a888" stroke-width="2"/>' +
-    '<ellipse cx="162" cy="80" rx="21" ry="4" fill="#cfe0c0"/>' +
+function potSVG() {
+  return '<svg viewBox="0 0 120 100" class="tea-pot-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<path d="M32 50a26 21 0 0 0 4 36" fill="none" stroke="#8a5a44" stroke-width="6" stroke-linecap="round"/>' +
+    '<ellipse cx="62" cy="62" rx="34" ry="25" fill="#8a5a44"/>' +
+    '<path d="M92 50l21 8-5 12-17-7z" fill="#8a5a44"/>' +
+    '<ellipse cx="62" cy="40" rx="14" ry="5" fill="#6e4634"/><circle cx="62" cy="34" r="4.5" fill="#6e4634"/></svg>';
+}
+function cupSVG() {
+  return '<svg viewBox="0 0 100 84" class="tea-cup-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
     '<g class="steam-g" stroke="#9db8a4" stroke-width="3" fill="none" stroke-linecap="round">' +
-    '<path d="M154 68c-3-6 3-8 0-14"/><path d="M166 68c-3-6 3-8 0-14"/></g></svg>';
+    '<path d="M42 22c-3-6 3-8 0-14"/><path d="M57 22c-3-6 3-8 0-14"/></g>' +
+    '<path d="M20 32h60l-5 32a6 6 0 0 1-6 5H31a6 6 0 0 1-6-5z" fill="#fdfbf4" stroke="#b9a888" stroke-width="2"/>' +
+    '<ellipse class="cup-tea" cx="50" cy="33" rx="28" ry="4.2" fill="#c07f2e"/>' +
+    '<ellipse cx="50" cy="32" rx="30" ry="4.5" fill="none" stroke="#b9a888" stroke-width="1.5"/></svg>';
 }
 function propHTML(qkey) {
-  if (qkey === "alpha") return '<div class="prop"><div class="prop-title">🧷 工房のメモ板</div><div class="sticky-board" id="sticky-board"></div><button class="ghost prop-btn" id="prop-btn">付箋を貼る</button> <span class="small" id="prop-count">貼った付箋：0枚</span></div>';
-  if (qkey === "beta") return '<div class="prop"><div class="prop-title">🥁 集会の太鼓</div><button class="prop-emoji" id="prop-btn" aria-label="太鼓を叩く">🥁</button><div class="small" id="prop-count">叩いた回数：0</div></div>';
-  if (qkey === "gamma") return '<div class="prop"><div class="prop-title">🪙 コインの山</div><div class="coin-stack" id="coin-stack"></div><button class="ghost prop-btn" id="prop-btn">コインを積む</button> <span class="small" id="prop-count">積んだコイン：0枚</span></div>';
-  if (qkey === "delta" || qkey === "psi") return '<div class="prop"><div class="prop-title">🌿 ドクダミ摘み</div><button class="ghost prop-btn" id="prop-btn">ドクダミを摘む</button> <span class="small" id="prop-count">摘んだ数：0</span><div class="small" id="prop-line"></div></div>';
-  if (qkey === "phi") return '<div class="prop"><div class="prop-title">🪧 集いの看板</div><div class="sign-board tilted" id="sign-board">今のままじゃダメだ</div><button class="ghost prop-btn" id="prop-btn">看板を直す</button> <span class="small" id="prop-count">直した回数：0</span></div>';
-  if (qkey === "chi") return '<div class="prop"><div class="prop-title">🍵 庭のお茶</div><div class="tea-set" id="tea-set">' + teaSVG() + '</div><button class="ghost prop-btn" id="prop-btn">お茶を注ぐ</button> <span class="small" id="prop-count">飲んだ杯数：0</span><div class="small" id="prop-line">急須が温まっている。誰も急かさない。</div></div>';
-  if (qkey === "omega") return '<div class="prop"><div class="prop-title">🚪 サロンの扉</div><button class="ghost prop-btn" id="prop-btn">扉をノックする</button> <span class="small" id="prop-count">ノック：0回</span><div class="small" id="prop-line"></div></div>';
+  if (qkey === "alpha") return '<div class="prop"><div class="prop-title">🧷 工房のメモ板（付箋はドラッグで貼り直せる）</div><div class="sticky-board" id="sticky-board"></div><button class="ghost prop-btn" id="prop-btn">付箋を貼る</button> <span class="small" id="prop-count">貼った付箋：0枚</span></div>';
+  if (qkey === "beta") return '<div class="prop"><div class="prop-title">🥁 集会の太鼓（ドラッグで移動、タップで叩く）</div><button class="prop-emoji" id="prop-btn" aria-label="太鼓を叩く">🥁</button><div class="small" id="prop-count">叩いた回数：0</div></div>';
+  if (qkey === "gamma") return '<div class="prop"><div class="prop-title">🪙 コインの山（ドラッグで動かせる）</div><div class="coin-stage" id="coin-stack"></div><button class="ghost prop-btn" id="prop-btn">コインを積む</button> <span class="small" id="prop-count">積んだコイン：0枚</span></div>';
+  if (qkey === "delta" || qkey === "psi") return '<div class="prop"><div class="prop-title">🌿 ドクダミ摘み（株をドラッグで引き抜ける）</div><button class="ghost prop-btn" id="prop-btn">ドクダミを摘む</button> <span class="small" id="prop-count">摘んだ数：0</span><div class="small" id="prop-line"></div></div>';
+  if (qkey === "phi") return '<div class="prop"><div class="prop-title">🪧 集いの看板（ドラッグで真っ直ぐに直す）</div><div class="sign-board tilted" id="sign-board">今のままじゃダメだ</div><button class="ghost prop-btn" id="prop-btn">看板を直す</button> <span class="small" id="prop-count">直した回数：0</span></div>';
+  if (qkey === "chi") return '<div class="prop"><div class="prop-title">🍵 庭のお茶（急須をドラッグして湯呑みの上へ）</div><div class="tea-stage" id="tea-stage"><div class="tea-stream" id="tea-stream"></div><div class="tea-pot" id="tea-pot"><div class="tea-pot-inner">' + potSVG() + '</div></div><div class="tea-cup" id="tea-cup">' + cupSVG() + '</div></div><button class="ghost prop-btn" id="prop-btn">お茶を注ぐ</button> <span class="small" id="prop-count">飲んだ杯数：0</span><div class="small" id="prop-line">急須が温まっている。湯呑みは置き場所を変えられて、ダブルタップか長押しで飲める。誰も急かさない。</div></div>';
+  if (qkey === "omega") return '<div class="prop"><div class="prop-title">🚪 サロンの扉（取っ手をドラッグで引いてもいい）</div><div class="door-stage" id="door-stage"><div class="door-handle" id="door-handle"></div></div><button class="ghost prop-btn" id="prop-btn">扉をノックする</button> <span class="small" id="prop-count">ノック：0回</span><div class="small" id="prop-line"></div></div>';
   return "";
 }
 function bindProp(qkey) {
@@ -554,6 +684,7 @@ function bindProp(qkey) {
   if (!btn) return;
   const count = document.getElementById("prop-count");
   const line = document.getElementById("prop-line");
+  const dragHook = () => noteWormDrag(qkey);
   let n = 0;
   if (qkey === "alpha") {
     const board = document.getElementById("sticky-board");
@@ -563,10 +694,15 @@ function bindProp(qkey) {
       n++;
       const s = document.createElement("span");
       s.className = "sticky";
+      const rot = (n * 37) % 13 - 6;
+      s.dataset.rot = rot;
       s.style.background = colors[n % colors.length];
-      s.style.transform = "rotate(" + ((n * 37) % 13 - 6) + "deg)";
+      s.style.transform = "rotate(" + rot + "deg)";
       s.textContent = words[n % words.length];
       board.appendChild(s);
+      makeDraggable(s, { container: board, render: (el, x, y) => {
+        el.style.transform = "translate(" + x + "px," + y + "px) rotate(" + el.dataset.rot + "deg)";
+      } });
       count.textContent = "貼った付箋：" + n + "枚";
     };
     return;
@@ -577,74 +713,205 @@ function bindProp(qkey) {
       btn.classList.remove("shake"); void btn.offsetWidth; btn.classList.add("shake");
       count.textContent = "叩いた回数：" + n + (n >= 5 ? "（列の声が少しそろってきた）" : "");
     };
+    makeDraggable(btn, { onFirstDrag: dragHook });
     return;
   }
   if (qkey === "gamma") {
-    const stack = document.getElementById("coin-stack");
+    const stage = document.getElementById("coin-stack");
+    let level = 0;
     btn.onclick = () => {
       n++;
       const s = document.createElement("span");
+      s.className = "coin";
       s.textContent = "🪙";
-      stack.appendChild(s);
+      const jitter = ((n * 29) % 17) - 8;
+      s.dataset.level = level;
+      s.style.left = (stage.clientWidth / 2 - 15 + jitter) + "px";
+      s.style.top = (stage.clientHeight - 36 - level * 15) + "px";
+      level++;
+      stage.appendChild(s);
+      makeDraggable(s, { mode: "position", container: stage, onDragEnd: (el) => {
+        el.classList.add("settling");
+        el.style.top = (stage.clientHeight - 36 - Number(el.dataset.level || 0) * 15) + "px";
+        el.style.transform = "rotate(" + (((Number(el.dataset.level || 0) * 41) % 25) - 12) + "deg)";
+        setTimeout(() => el.classList.remove("settling"), 340);
+      } });
       count.textContent = "積んだコイン：" + n + "枚";
     };
     return;
   }
   if (qkey === "delta" || qkey === "psi") {
     const lines = ["摘んだ。……なのに、増えた気がする", "根が残るからね。摘んでも増えるのよ", "摘んだ分だけ、声が近くなった気がする", "摘む手つきを、どこかで見られている気がする"];
-    btn.onclick = () => {
+    dokuPluckSink = () => {
       n++;
-      growDoku(true);
       count.textContent = "摘んだ数：" + n;
       if (line) line.textContent = lines[(n - 1) % lines.length];
     };
+    btn.onclick = () => { dokuPluckSink(); growDoku(true); };
     return;
   }
   if (qkey === "phi") {
     const sign = document.getElementById("sign-board");
-    btn.onclick = () => {
-      n++;
-      sign.classList.remove("tilted");
-      count.textContent = "直した回数：" + n;
+    function scheduleTilt() {
       if (propTimeout) clearTimeout(propTimeout);
-      propTimeout = setTimeout(() => { const s2 = document.getElementById("sign-board"); if (s2) s2.classList.add("tilted"); }, 2600);
-    };
+      propTimeout = setTimeout(() => { const s2 = document.getElementById("sign-board"); if (s2) { s2.style.transform = ""; s2.classList.add("tilted"); } }, 2600);
+    }
+    function straighten() {
+      if (propTimeout) { clearTimeout(propTimeout); propTimeout = null; }
+      sign.classList.remove("tilted");
+      sign.style.transform = "";
+      n++;
+      count.textContent = "直した回数：" + n;
+      scheduleTilt();
+    }
+    btn.onclick = straighten;
+    let sx = 0, dragging = false, deg = -7, maxDx = 0;
+    sign.classList.add("draggable");
+    sign.addEventListener("pointerdown", (e) => {
+      dragging = true; maxDx = 0; sx = e.clientX; deg = -7;
+      try { sign.setPointerCapture(e.pointerId); } catch (err) {}
+      sign.classList.add("dragging");
+      if (propTimeout) { clearTimeout(propTimeout); propTimeout = null; }
+    });
+    sign.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const dx = Math.abs(e.clientX - sx);
+      maxDx = Math.max(maxDx, dx);
+      if (dx > 5) dragHook();
+      deg = -7 + Math.min(7, dx * 0.09);
+      sign.classList.remove("tilted");
+      sign.style.transform = "rotate(" + deg + "deg)";
+    });
+    function signEnd() {
+      if (!dragging) return;
+      dragging = false;
+      sign.classList.remove("dragging");
+      if (maxDx > 5) sign._suppressClickUntil = Date.now() + 400;
+      if (deg > -1.2) straighten();
+      else { sign.style.transform = ""; sign.classList.add("tilted"); }
+    }
+    sign.addEventListener("pointerup", signEnd);
+    sign.addEventListener("pointercancel", signEnd);
+    sign.addEventListener("click", () => {
+      if (sign._suppressClickUntil && Date.now() < sign._suppressClickUntil) { sign._suppressClickUntil = 0; return; }
+      straighten();
+    });
     return;
   }
   if (qkey === "chi") {
-    const set = document.getElementById("tea-set");
-    let phase = 0; // 0:注げる 1:飲める
-    btn.onclick = () => {
-      if (phase === 0) {
-        set.classList.add("steaming");
-        line.textContent = "注いだ。湯気が立っている。……誰も何も言わない。";
-        btn.textContent = "飲む";
-        phase = 1;
-      } else {
+    const stage = document.getElementById("tea-stage");
+    const pot = document.getElementById("tea-pot");
+    const cup = document.getElementById("tea-cup");
+    const stream = document.getElementById("tea-stream");
+    let teaState = "empty"; // empty | full | drinking
+    let pourTimer = null;
+    cup.style.left = cup.offsetLeft + "px";
+    cup.style.top = cup.offsetTop + "px";
+    cup.style.right = "auto";
+    cup.style.bottom = "auto";
+    function pourTea() {
+      if (teaState !== "empty") return;
+      teaState = "full";
+      stage.classList.remove("pouring");
+      cup.classList.add("full");
+      line.textContent = "注いだ。湯気が立っている。……誰も何も言わない。";
+      btn.textContent = "飲む";
+    }
+    function drinkTea() {
+      if (teaState !== "full") return;
+      teaState = "drinking";
+      cup.classList.add("drinking");
+      setTimeout(() => {
+        cup.classList.remove("full", "drinking");
+        teaState = "empty";
         n++;
-        set.classList.remove("steaming");
-        line.textContent = "……温かい。何も起きない、ということが起きている。";
         count.textContent = "飲んだ杯数：" + n;
+        line.textContent = "……温かい。何も起きない、ということが起きている。";
         btn.textContent = "おかわりを注ぐ";
-        phase = 0;
+      }, 850);
+    }
+    function positionStream() {
+      const sr = stage.getBoundingClientRect();
+      const pr = pot.getBoundingClientRect(), cr = cup.getBoundingClientRect();
+      stream.style.left = (cr.left + cr.width / 2 - sr.left - 2) + "px";
+      stream.style.top = (pr.bottom - sr.top - 8) + "px";
+      stream.style.height = Math.max(12, cr.top - pr.bottom + 16) + "px";
+    }
+    function cancelPour() {
+      if (pourTimer) { clearTimeout(pourTimer); pourTimer = null; }
+      stage.classList.remove("pouring");
+    }
+    function checkPour() {
+      if (teaState !== "empty") return;
+      const pr = pot.getBoundingClientRect(), cr = cup.getBoundingClientRect();
+      const over = pr.right > cr.left - 6 && pr.left < cr.right + 6 && pr.bottom > cr.top - 56 && pr.bottom < cr.top + 34;
+      if (over && !pourTimer) {
+        stage.classList.add("pouring");
+        positionStream();
+        pourTimer = setTimeout(() => { pourTimer = null; pourTea(); }, 900);
+      } else if (!over && pourTimer) {
+        cancelPour();
       }
+    }
+    makeDraggable(pot, { mode: "position", container: stage, onDrag: checkPour, onDragEnd: cancelPour });
+    makeDraggable(cup, { mode: "position", container: stage });
+    // 湯呑みを飲む操作：ダブルタップ or 長押し
+    let lastTap = 0, pressTimer = null, pressed = false, downX = 0, downY = 0;
+    cup.addEventListener("pointerdown", (e) => {
+      downX = e.clientX; downY = e.clientY; pressed = false;
+      if (pressTimer) clearTimeout(pressTimer);
+      pressTimer = setTimeout(() => { pressTimer = null; pressed = true; drinkTea(); }, 560);
+    });
+    cup.addEventListener("pointermove", (e) => {
+      if (pressTimer && Math.hypot(e.clientX - downX, e.clientY - downY) > 8) { clearTimeout(pressTimer); pressTimer = null; }
+    });
+    cup.addEventListener("pointerup", () => {
+      if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+      if (pressed) { pressed = false; return; }
+      if (cup._lastDragEnd && Date.now() - cup._lastDragEnd < 120) return;
+      const now = Date.now();
+      if (now - lastTap < 320) { lastTap = 0; drinkTea(); }
+      else lastTap = now;
+    });
+    btn.onclick = () => {
+      if (teaState === "empty") {
+        stage.classList.add("pouring");
+        positionStream();
+        setTimeout(pourTea, 450);
+      } else drinkTea();
     };
     return;
   }
   if (qkey === "omega") {
     const replies = ["（……静かだ。聞こえていないのかもしれない）", "（中から、静かな声）「どなた？」", "（声）「ノックは2回まで、と決まっているの」", "（声）「……気が向いたら、開けるわ」", "（声）「その根気、嫌いじゃないわよ」"];
-    btn.onclick = () => {
+    const door = document.getElementById("door-stage");
+    const handle = document.getElementById("door-handle");
+    function knock() {
       n++;
       count.textContent = "ノック：" + n + "回";
       if (line) line.textContent = replies[Math.min(n - 1, replies.length - 1)];
-    };
+      if (door) { door.classList.remove("shake"); void door.offsetWidth; door.classList.add("shake"); }
+    }
+    btn.onclick = knock;
+    if (handle) {
+      const home = { x: handle.offsetLeft, y: handle.offsetTop };
+      makeDraggable(handle, { mode: "position", container: door, onDragEnd: (el) => {
+        const pulled = Math.hypot(el.offsetLeft - home.x, el.offsetTop - home.y);
+        el.classList.add("settling");
+        el.style.left = home.x + "px"; el.style.top = home.y + "px";
+        setTimeout(() => el.classList.remove("settling"), 340);
+        if (pulled > 13) knock();
+      } });
+      handle.addEventListener("click", () => knock());
+    }
     return;
   }
 }
-
 // ---- トップ ----
 function renderTop() {
   stopAllTimers();
+  wormDragNoted = false;
+  dokuPluckSink = null;
   app.innerHTML = '<div class="card"><h1>あなたに合うクアドラはどれ？</h1>' +
     '<p class="lead">ソシオニクスの8つのクアドラには、それぞれ違う「文化」と「空気」がある。この診断は、あなたのタイプを当てるものじゃない。8つの場を巡る旅の中で、どの場の空気が心地いいかを行動から測る、相性診断。</p>' +
     '<p class="lead">場に長く留まるか、誘いに乗るか、すぐ離れたくなるか。答えの内容だけじゃなく、あなたの操作そのものを見ている。</p>' +
