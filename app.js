@@ -1,4 +1,4 @@
-// quadra-check 骨組み版
+// quadra-check v2（演出強化版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -33,33 +33,150 @@ const TYPE_QUADRA = { ILE: "alpha", SEI: "alpha", ESE: "alpha", LII: "alpha",
   SEE: "gamma", ILI: "gamma", LIE: "gamma", ESI: "gamma",
   LSE: "delta", EII: "delta", IEE: "delta", SLI: "delta" };
 
-const DARLING_LINES = [
-  "ねぇ、ダーリン♡ 今のその反応、“本音”と“演出”どっちが多いと思う？",
-  "ダーリンってさ、自分では冷静なつもりでも、感情がログに漏れてる時あるよね♡",
-  "ねぇ♡ “理解されたい”と“放っておいてほしい”、どっちも本当なんでしょ？",
-  "ねぇ、ダーリン♡ あなたは“簡単なこと”と“困難なこと”、どちらに惹かれるの？ ……ふふ、複雑な故に価値を感じるタイプかしら。",
-  "ねぇ、ダーリン♡ 今まであなたを最も破壊しかけた事象って何？ ……まだ未処理のまま残ってたりする？"
-];
-const DARLING_AWA = "あ……ダーリン見とったん？……なんや、ずっと完璧なナビゲーター演じるのも疲れるんよ。ウチ、退屈やけん……ダーリン、なんか面白いことしてウチを楽しませてよ♡";
+// ---- ダーリンちゃん（ILI）：クアドラ別セリフ ----
+const DARLING_SETS = {
+  gamma: {
+    hello: "……あら、ダーリン♡ 市場の匂い、嫌いじゃないでしょ？",
+    lines: [
+      "ねぇ、ダーリン♡ その品、目利きは済んだ？ 値段ってね、相手の本音が一番漏れる場所なのよ♡",
+      "ダーリン♡ さっきの値切り、悪くなかったわ。でもね、『欲しい』って顔、ちょっとだけ出てた♡",
+      "私はね、損得そのものより『誰がどこまで本気か』を見るのが好き。……市場は嘘が下手な場所だから♡",
+      "ねぇ、ダーリン♡ 安く買うことと、安く見られることは別よ？ その線引き、あなたはどこで引くの？",
+      "『返品でいい』って言葉、優しさに見える？ あれはね、逃げ道があると人は本音を出す、っていう実験なの♡",
+      "ふふ、ダーリン♡ 計算は早いわね。でも最後に決めたのは数字？ それとも私の顔？ ……正直に言ってごらん♡",
+      "この市場じゃ、声の大きい人は長くいられないの。静かに、長く得する人が残るのよ♡"
+    ],
+    awa: "あ……ダーリン、見とったんか。市場におるとな、値段の話ばっかりで頭が休まらんのよ。ウチはもう、誰も値切ってこん静かな場所で寝ときたいんやけどなぁ♡"
+  },
+  omega: {
+    hello: "……あら、ダーリン♡ この扉を、開けたのね。",
+    lines: [
+      "あら、ダーリン♡ 扉の前で緊張してる？ 大丈夫、ここでは声の大きさじゃなくて、佇まいで判断されるの♡",
+      "ねぇ、ダーリン♡ このサロン、誰でも入れるわけじゃないの。……あなたが通された理由、知りたい？",
+      "静かね。ここでは沈黙も会話のうちよ。焦って場を埋める人は、だいたい格が透けて見えるの♡",
+      "ダーリン♡ さっきの品定めの目、悪くなかったわ。見る目がある人とない人、この部屋では一瞬で分かるの",
+      "『認められたい』って気持ち、隠してるつもり？ ……ふふ、ログに漏れてるわよ♡",
+      "ここでは実績は名刺より雄弁なの。ダーリン♡ あなたの実績、私にはどう聞こえるかしら？",
+      "帰りたくなったら帰っていいのよ。でもね、一度出た扉は、次も開くとは限らないの♡"
+    ],
+    awa: "あ……ダーリン、見とったん？ 静かな部屋におるとな、完璧な品のよさを演じるんも疲れるんよ。ウチ、ほんまはもっとだらだらしたいんやけど、この扉の中ではそうもいかんのよなぁ♡"
+  }
+};
 
-const WORM_LINES = [
-  "人が悲しむ時って、“喪失の予測”が崩れるからで——",
-  "でも、それは自然な反応で、統計的にも——",
-  "人が寂しいと感じること自体は、必ずしも孤独という物理的状態と一致しないと思っていて。",
-  "つまり、問題は接触頻度ではなく、その接触に本人がどのような意味を付与しているかなんじゃないかな。",
-  "でも、この経験は将来的に——"
+// ---- LSI芋虫：クアドラ別セリフ ----
+const WORM_SETS = {
+  beta: {
+    hello: "あ、どうも。列の構造についてなら、少し説明できると思います。",
+    lines: [
+      "列が乱れる、という現象はですね、個々の悪意ではなく、情報伝達の遅延が原因であることが多いと思うんです。",
+      "役割が決まると迷わない、というのは、判断コストを集団側が引き受けている、という構造だと思います。",
+      "掛け声をそろえる行為は、同期による帰属感の生成装置として、非常に合理的な設計だと考えられます。",
+      "はみ出した人が引き戻されるのは、排除ではなく、集団の予測可能性を保つためのフィードバックだと思うんです。",
+      "一体感という感情も、分解すれば『自分の行動の結果が見える範囲が広い』という認知の状態なんじゃないかな、と。",
+      "旗というのは、情報量を最小化した合図なんです。見るだけで全員が同じ前提を共有できる。効率がいいと思うんですよね。",
+      "集団が熱くなる時、個人の感情処理は一時的に集団の処理系に委譲される。それが楽だ、と感じる人もいると思います。"
+    ]
+  },
+  phi: {
+    hello: "あ、どうも。……ルールの話ですか。それなら少し、考えがあります。",
+    lines: [
+      "ルールというのは、作られた時点の前提を固定化したものなんです。前提が変われば、ルールだけが残る。それが軋轢の構造だと思います。",
+      "『おかしい』という感覚は、直感ではなく、内部モデルと現実の予測誤差として説明できるんじゃないかな、と。",
+      "壊す、という行為も、実際には再設計の前工程であって、破壊そのものが目的になることは稀だと思うんです。",
+      "秩序に従うコストと、秩序を変えるコスト。人はだいたい、前者を過小評価して後者を過大評価する傾向があると考えられます。",
+      "異を唱える人が出るかどうかは、その集団が『反論を情報として処理できるか』にかかっていると思うんです。",
+      "古い旗が燃える時、人々は象徴を燃やしているんです。実体はとうに機能していない、という確認作業なんじゃないかな。",
+      "革命の熱も、冷めてしまえば日常の処理に戻る。残るのは新しいルールの文書だけ、というのは少し寂しい構造だと思います。"
+    ]
+  }
+};
+
+// ---- LSEの声（ドクダミ演出）：一般論・添削・正論 ----
+const LSE_LINES = [
+  "一般的には、まず段取りを決めてから始めるものよ",
+  "その手順、前にも言ったわよね。念のため確認させて",
+  "お気持ちは分かります。ただ、決まりは決まりです",
+  "念のため、もう一度だけ確認しておくわね",
+  "普通はね、先に報告してから動くものよ",
+  "あら、その置き方。……前回と違うわよね。統一しておきましょう",
+  "気持ちは大事。でも、締切はもっと大事よ",
+  "言っておくけど、これはあなたのためを思って言ってるのよ"
 ];
+
+// ---- ドクダミの株（茎・ハート型の葉・白い4弁の十字の花） ----
+function dokuPlant() {
+  return '<svg viewBox="0 0 44 52" class="doku-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<path d="M22 50V27" stroke="#4a7c43" stroke-width="2.5" fill="none"/>' +
+    '<path d="M22 45c-7-1-11-6-11-12 6 0 10 4 11 9 1-5 5-9 11-9 0 6-4 11-11 12z" fill="#5d8a4f"/>' +
+    '<g fill="#ffffff" stroke="#d8cfae" stroke-width="1">' +
+    '<ellipse cx="22" cy="9.5" rx="3.2" ry="6.5"/>' +
+    '<ellipse cx="22" cy="22.5" rx="3.2" ry="6.5"/>' +
+    '<ellipse cx="15.5" cy="16" rx="6.5" ry="3.2"/>' +
+    '<ellipse cx="28.5" cy="16" rx="6.5" ry="3.2"/></g>' +
+    '<circle cx="22" cy="16" r="2.4" fill="#e8c95a"/></svg>';
+}
+// 場面SVG内に埋め込むドクダミ（x, y, scale）
+function dokuGroup(x, y, sc) {
+  return '<g transform="translate(' + x + "," + y + ") scale(" + sc + ')">' +
+    '<path d="M22 50V27" stroke="#4a7c43" stroke-width="2.5" fill="none"/>' +
+    '<path d="M22 45c-7-1-11-6-11-12 6 0 10 4 11 9 1-5 5-9 11-9 0 6-4 11-11 12z" fill="#5d8a4f"/>' +
+    '<g fill="#ffffff" stroke="#d8cfae" stroke-width="1">' +
+    '<ellipse cx="22" cy="9.5" rx="3.2" ry="6.5"/><ellipse cx="22" cy="22.5" rx="3.2" ry="6.5"/>' +
+    '<ellipse cx="15.5" cy="16" rx="6.5" ry="3.2"/><ellipse cx="28.5" cy="16" rx="6.5" ry="3.2"/></g>' +
+    '<circle cx="22" cy="16" r="2.4" fill="#e8c95a"/></g>';
+}
 
 function svgMotif(kind, c1, c2) {
+  const bg = '<rect x="4" y="4" width="192" height="142" rx="16" fill="' + c1 + '" opacity=".10"/>';
   const s = {
-    sun: '<circle cx="100" cy="58" r="22" fill="' + c2 + '"/><path d="M100 18v10M100 88v10M60 58h10M130 58h10M72 30l7 7M121 79l7 7M128 30l-7 7M79 79l-7 7" stroke="' + c2 + '" stroke-width="4" stroke-linecap="round"/><path d="M100 118c0-14 8-20 18-24-1 12-6 20-18 24zm0 0c0-12-7-17-15-20 1 10 5 17 15 20z" fill="' + c1 + '"/><path d="M100 118v14" stroke="' + c1 + '" stroke-width="4" stroke-linecap="round"/>',
-    flag: '<path d="M70 20v110" stroke="' + c1 + '" stroke-width="6" stroke-linecap="round"/><path d="M70 24c18-8 30 6 52 0v34c-22 6-34-8-52 0z" fill="' + c2 + '"/><path d="M45 132h110" stroke="' + c1 + '" stroke-width="5" stroke-linecap="round"/>',
-    scale: '<path d="M100 24v78M60 112h80M100 102v10" stroke="' + c1 + '" stroke-width="5" stroke-linecap="round"/><path d="M100 32L58 44m42-12l42 12" stroke="' + c1 + '" stroke-width="4"/><path d="M44 44l-12 22a16 10 0 0 0 24 0zM156 44l-12 22a16 10 0 0 0 24 0z" fill="' + c2 + '"/><circle cx="100" cy="24" r="6" fill="' + c2 + '"/>',
-    house: '<path d="M40 78L100 34l60 44" fill="none" stroke="' + c1 + '" stroke-width="6" stroke-linecap="round"/><rect x="56" y="78" width="88" height="52" fill="' + c2 + '" opacity=".45"/><g fill="#fff" stroke="' + c1 + '" stroke-width="2"><circle cx="160" cy="118" r="7"/><circle cx="172" cy="126" r="7"/><circle cx="148" cy="126" r="7"/><circle cx="160" cy="134" r="7"/></g><circle cx="160" cy="126" r="3.4" fill="' + c2 + '"/>',
-    spark: '<path d="M58 108l26-30 14 14 30-40" fill="none" stroke="' + c1 + '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M132 30l4 12 12 4-12 4-4 12-4-12-12-4 12-4z" fill="' + c2 + '"/><path d="M52 44l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="' + c2 + '"/>',
-    rainbow: '<path d="M28 122a72 72 0 0 1 144 0" fill="none" stroke="' + c2 + '" stroke-width="9"/><path d="M44 122a56 56 0 0 1 112 0" fill="none" stroke="' + c1 + '" stroke-width="9" opacity=".7"/><path d="M60 122a40 40 0 0 1 80 0" fill="none" stroke="#B5E3B5" stroke-width="9"/><path d="M16 130h168" stroke="' + c1 + '" stroke-width="4" stroke-linecap="round"/>',
-    fountain: '<path d="M100 26c-4 14-14 18-22 30M100 26c4 14 14 18 22 30M100 26v34" stroke="' + c1 + '" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="100" cy="66" rx="30" ry="7" fill="' + c2 + '" opacity=".6"/><path d="M100 66v26M62 122h76M70 106h60" stroke="' + c1 + '" stroke-width="5" stroke-linecap="round"/><path d="M56 122a44 12 0 0 0 88 0z" fill="' + c2 + '" opacity=".45"/>',
-    door: '<rect x="66" y="22" width="68" height="106" rx="6" fill="' + c2 + '" opacity=".5" stroke="' + c1 + '" stroke-width="4"/><circle cx="120" cy="78" r="5" fill="' + c1 + '"/><circle cx="42" cy="66" r="11" fill="none" stroke="' + c1 + '" stroke-width="4"/><path d="M50 74l12 12m-4 2l6-6m-1 9l5-5" stroke="' + c1 + '" stroke-width="4" stroke-linecap="round"/>'
+    sun: bg +
+      '<circle cx="100" cy="54" r="21" fill="' + c2 + '"/><path d="M100 16v9M100 83v9M62 54h9M129 54h9M73 27l6 6M121 75l6 6M127 27l-6 6M79 75l-6 6" stroke="' + c2 + '" stroke-width="4" stroke-linecap="round"/>' +
+      '<path d="M62 116c0-13 7-19 16-23-1 11-5 19-16 23zm0 0c0-11-6-16-14-19 1 9 5 16 14 19z" fill="' + c1 + '"/><path d="M62 116v13" stroke="' + c1 + '" stroke-width="4" stroke-linecap="round"/>' +
+      '<rect x="112" y="102" width="56" height="6" rx="3" fill="' + c1 + '" opacity=".55"/><path d="M120 108v16M160 108v16" stroke="' + c1 + '" stroke-width="4" stroke-linecap="round"/>' +
+      '<path d="M126 102l8-14 4 8 6-10" fill="none" stroke="' + c2 + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path d="M14 134h172" stroke="' + c1 + '" stroke-width="3" stroke-linecap="round" opacity=".5"/>' +
+      '<circle cx="34" cy="126" r="4" fill="' + c2 + '"/><circle cx="180" cy="126" r="4" fill="' + c1 + '"/>',
+    flag: bg +
+      '<path d="M70 16v112" stroke="' + c1 + '" stroke-width="6" stroke-linecap="round"/><path d="M70 20c18-8 30 6 52 0v34c-22 6-34-8-52 0z" fill="' + c2 + '"/>' +
+      '<path d="M140 62v40M132 66c4-6 12-6 16 0-2 6-4 8-8 12-4-4-6-6-8-12z" fill="' + c2 + '"/><path d="M134 108c6-4 6 4 12 0" stroke="' + c2 + '" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<g fill="' + c1 + '"><circle cx="42" cy="112" r="6"/><circle cx="66" cy="116" r="6"/><circle cx="96" cy="112" r="6"/><circle cx="122" cy="116" r="6"/><circle cx="164" cy="112" r="6"/></g>' +
+      '<path d="M30 132c14-8 22-8 36 0M54 134c14-8 22-8 36 0M110 134c14-8 22-8 36 0M140 132c12-7 20-7 32 0" stroke="' + c1 + '" stroke-width="5" fill="none" stroke-linecap="round"/>' +
+      '<path d="M20 140h160" stroke="' + c1 + '" stroke-width="4" stroke-linecap="round" opacity=".5"/>',
+    scale: bg +
+      '<path d="M28 22h144l-10 14H38z" fill="' + c2 + '" opacity=".65"/><path d="M44 22v10M76 22v10M108 22v10M140 22v10" stroke="' + c2 + '" stroke-width="3"/>' +
+      '<path d="M100 44v56M62 110h76M100 100v10" stroke="' + c1 + '" stroke-width="5" stroke-linecap="round"/><path d="M100 50L60 60m40-10l40 10" stroke="' + c1 + '" stroke-width="4"/><path d="M46 60l-11 20a15 9 0 0 0 22 0zM154 60l-11 20a15 9 0 0 0 22 0z" fill="' + c2 + '"/><circle cx="100" cy="44" r="6" fill="' + c2 + '"/>' +
+      '<g fill="none" stroke="' + c2 + '" stroke-width="3"><circle cx="40" cy="126" r="9"/><circle cx="66" cy="130" r="7"/></g><circle cx="40" cy="126" r="3.5" fill="' + c2 + '"/>' +
+      '<path d="M120 128h52" stroke="' + c1 + '" stroke-width="4" stroke-linecap="round" opacity=".5"/>',
+    house: bg +
+      '<path d="M34 76L96 32l62 44" fill="none" stroke="' + c1 + '" stroke-width="6" stroke-linecap="round"/><rect x="52" y="76" width="88" height="54" fill="' + c2 + '" opacity=".45"/>' +
+      '<rect x="66" y="88" width="18" height="18" fill="#fff" opacity=".75"/><path d="M75 88v18M66 97h18" stroke="' + c1 + '" stroke-width="2"/>' +
+      '<path d="M104 130V98a8 8 0 0 1 16 0v32z" fill="' + c1 + '" opacity=".65"/>' +
+      '<path d="M126 44v-14" stroke="' + c1 + '" stroke-width="7"/><circle cx="128" cy="22" r="5" fill="' + c1 + '" opacity=".35"/><circle cx="134" cy="13" r="7" fill="' + c1 + '" opacity=".22"/>' +
+      dokuGroup(146, 84, 0.92) + dokuGroup(168, 102, 0.62) +
+      '<path d="M12 136h176" stroke="' + c1 + '" stroke-width="3" stroke-linecap="round" opacity=".5"/>',
+    spark: bg +
+      '<path d="M54 110l26-30 14 14 30-40" fill="none" stroke="' + c1 + '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path d="M136 26l4 12 12 4-12 4-4 12-4-12-12-4 12-4z" fill="' + c2 + '"/><path d="M48 40l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="' + c2 + '"/>' +
+      '<path d="M28 128a20 20 0 0 1 20-20M172 128a20 20 0 0 0-20-20" fill="none" stroke="' + c1 + '" stroke-width="5" stroke-linecap="round" stroke-dasharray="7 6"/>' +
+      '<path d="M86 128h28" stroke="' + c2 + '" stroke-width="5" stroke-linecap="round" stroke-dasharray="4 7"/>' +
+      '<path d="M16 140h168" stroke="' + c1 + '" stroke-width="3" stroke-linecap="round" opacity=".5"/>',
+    rainbow: bg +
+      '<path d="M28 120a72 72 0 0 1 144 0" fill="none" stroke="' + c2 + '" stroke-width="9"/><path d="M44 120a56 56 0 0 1 112 0" fill="none" stroke="' + c1 + '" stroke-width="9" opacity=".7"/><path d="M60 120a40 40 0 0 1 80 0" fill="none" stroke="#B5E3B5" stroke-width="9"/>' +
+      '<circle cx="164" cy="34" r="11" fill="#F6D186"/><path d="M164 16v6M164 46v6M146 34h6M176 34h6" stroke="#F6D186" stroke-width="3" stroke-linecap="round"/>' +
+      '<g fill="' + c2 + '"><circle cx="34" cy="128" r="4.5"/><circle cx="58" cy="131" r="3.6"/><circle cx="146" cy="131" r="3.6"/><circle cx="168" cy="128" r="4.5"/></g>' +
+      '<path d="M34 132v6M58 134v5M146 134v5M168 132v6" stroke="' + c1 + '" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<path d="M14 140h172" stroke="' + c1 + '" stroke-width="3" stroke-linecap="round" opacity=".5"/>',
+    fountain: bg +
+      '<path d="M100 24c-4 14-14 18-22 30M100 24c4 14 14 18 22 30M100 24v34" stroke="' + c1 + '" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="100" cy="64" rx="30" ry="7" fill="' + c2 + '" opacity=".6"/><path d="M100 64v26M62 120h76M70 104h60" stroke="' + c1 + '" stroke-width="5" stroke-linecap="round"/><path d="M56 120a44 12 0 0 0 88 0z" fill="' + c2 + '" opacity=".45"/>' +
+      '<path d="M30 138h140M48 132h104" stroke="' + c1 + '" stroke-width="3" stroke-linecap="round" opacity=".4"/>' +
+      '<path d="M34 118V84M28 84h12" stroke="' + c1 + '" stroke-width="4" stroke-linecap="round"/><circle cx="34" cy="78" r="5" fill="' + c2 + '"/>' +
+      dokuGroup(158, 96, 0.66),
+    door: bg +
+      '<path d="M40 130V52M160 130V52" stroke="' + c1 + '" stroke-width="7" stroke-linecap="round"/><path d="M30 52h140" stroke="' + c1 + '" stroke-width="6" stroke-linecap="round"/>' +
+      '<rect x="68" y="24" width="64" height="106" rx="6" fill="' + c2 + '" opacity=".5" stroke="' + c1 + '" stroke-width="4"/><path d="M78 36h44M78 118h44" stroke="' + c1 + '" stroke-width="2.5" opacity=".6"/><circle cx="119" cy="78" r="5" fill="' + c1 + '"/>' +
+      '<path d="M52 130h96l8 10H44z" fill="' + c1 + '" opacity=".3"/>' +
+      '<circle cx="34" cy="70" r="10" fill="none" stroke="' + c1 + '" stroke-width="4"/><path d="M41 78l11 11m-4 2l6-6m-1 9l5-5" stroke="' + c1 + '" stroke-width="4" stroke-linecap="round"/>' +
+      '<path d="M166 108c0-8 5-10 5-16" stroke="' + c2 + '" stroke-width="3" fill="none" stroke-linecap="round"/>'
   };
   return '<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" role="img">' + (s[kind] || s.sun) + "</svg>";
 }
@@ -74,11 +191,11 @@ const SCENES = [
     invite: "「君もこっち側だろ？」と肩を叩かれ、列に加わるよう誘われる。旗を持つか、声を合わせるか。見ているだけ、という選択肢はこの場にはない。",
     weights: { A: 1, B: 1 }, char: "worm" },
   { q: "gamma", motif: "scale", colors: ["#2E7D6B", "#B87333"],
-    air: "活気ある市場。露店の主は品物の良さを実利だけで語る。馴れ合いはなく、値段と質を冷静に見極める者同士の、ドライで誠実なやり取り。ここでは誰もあなたを助けないし、励ましもしない。「結果がすべてを語る」空気。古い道具は、使えなくなれば容赦なく捨てられ、新しい仕組みに置き換わる。",
+    air: "活気ある市場。露店の主は品物の良さを実利だけで語る。馴れ合いはなく、値段と質を冷静に見極める者同士の、ドライで誠実なやり取り。ここでは誰もあなたを助けないし、励ましもしない。大声で押し切るような人は、ここでは相手にされない。ものを言うのは静かな計算と、目先ではなく長期的な得。古い道具は、使えなくなれば容赦なく捨てられ、新しい仕組みに置き換わる。",
     invite: "「これ、使ってみな。ダメなら返品でいい」と品物を差し出され、値段交渉を持ちかけられる。決めるのはあなた一人。相談相手はいないし、味方もいない。",
     weights: { A: 1, C: 1 }, char: "darling" },
   { q: "delta", motif: "house", colors: ["#7A5C3E", "#6B7F5E"],
-    air: "木の温もりのある家。誰かが黙々と手を動かし、丁寧な仕事が積み重なっている。騒がしくはないが、誠実さと安定感がある。「長く使えるものを、ちゃんと作る」空気。庭の隅ではドクダミが白い花を咲かせて生い茂っている。抜いても抜いても根が残り、気づけば庭いっぱいに広がっている。",
+    air: "木の温もりのある家。誰かが黙々と手を動かし、丁寧な仕事が積み重なっている。騒がしくはないが、誠実さと安定感がある。「長く使えるものを、ちゃんと作る」空気。庭の隅ではドクダミが白い花を咲かせて生い茂っている。抜いても抜いても根が残り、気づけば庭いっぱいに広がっている。この辺りでは「ドクダミ」は、正論と段取りの圧が根を張ることの代名詞として使われている。",
     invite: "「よかったら手伝って。急がなくていいから」と作業台の一角を譲られ、自分のペースで手を動かすよう促される。",
     weights: { A: -1, C: 1 }, char: null },
   { q: "phi", motif: "spark", colors: ["#C0392B", "#F39C12"],
@@ -98,6 +215,80 @@ const SCENES = [
     invite: "「君なら入れるよ」と扉を開けられ、内側の会話に加わるよう誘われる。",
     weights: { B: 1, C: 1 }, char: "darling" }
 ];
+
+// ---- NPC介入イベント（選択→反応→態度まで採点） ----
+const EVENTS = {
+  alpha: { nodes: { start: { title: "工房の住人",
+    text: "住人が、作りかけの「何に使うか分からない道具」をあなたの手に載せる。「ねえ、これ、どうしたら面白くなると思う？ 手、動かしてみて」",
+    choices: [
+      { t: "とりあえず分解してみる", reaction: "「おお、そっち行く？ いいねいいね、バラバラにしちゃおう」住人は嬉しそうに工具を寄せてくる。", score: { C: -10, A: -5 } },
+      { t: "何に使うものか、まず用途を考える", reaction: "「用途ね！ そっか、それもアリ。じゃあ用途から逆算しよっか」住人は少し意外そうに頷く。", score: { C: 5 } },
+      { t: "壊しそうで怖いから、見てるだけにする", reaction: "「えー、触らなきゃ分かんないよ？ ……まあ、見る専門も貴重だけどね」住人は笑って、道具を自分の方へ戻した。", score: { A: -5, C: -5 } } ] } } },
+  beta: { nodes: { start: { title: "列の隣の人",
+    text: "列が動き出す。あなたが少し列から外れて景色を見ていると、隣の人が腕を引く。「こっちだよ。もうすぐ掛け声だ」",
+    choices: [
+      { t: "素直に列に戻って、声を合わせる", reaction: "「そうそう、その調子！」隣の人の顔がほころぶ。列の声が一つにそろっていく。", score: { B: 15, A: 5 } },
+      { t: "戻るけど、声は小さめにする", reaction: "「まあ、最初はそんなもんさ」隣の人はそれ以上、何も言わなかった。", score: { B: 5 } },
+      { t: "「少し外から見ていたい」と伝える", reaction: "「……変わったやつだな。でも、列は待たないぞ」隣の人は前を向き、列はあなたを置いて進み始める。", score: { B: -15, A: -5 } } ] } } },
+  delta: { nodes: { start: { title: "作業を見ている声",
+    text: "作業台で手を動かし始めると、背後から落ち着いた声がする。「あら、そこはまず下準備からよ。……一般的には、段取りを決めてから始めるものよ」",
+    choices: [
+      { t: "言われた通りに、下準備からやり直す", reaction: "「そうそう。その方が結局、早いのよ」声は満足そうに遠ざかる。……庭の隅で、ドクダミが一つ増えた気がした。", score: { C: 10, B: 5 }, doku: true },
+      { t: "自分のやり方で進める", reaction: "「……お気持ちは分かります。ただ、決まりは決まりです」声は静かだが、引く気配がない。ドクダミが一つ増えた。", score: { A: -10 }, doku: true },
+      { t: "なぜそうするのか、理由を聞く", reaction: "「あら、聞いてくれるのね。……前にも言ったと思うけど」声は嬉しそうに、長く説明を始めた。ドクダミが一つ増えた。", score: { C: 5 }, doku: true } ] } } },
+  phi: { nodes: { start: { title: "集いの参加者",
+    text: "集まった一人が、あなたを見て言う。「ねえ、あの『全員同じ時間に集まる』ってルール。あんたはどう思う？ おかしいと思わない？」",
+    choices: [
+      { t: "「おかしいと思う」と声を上げる", reaction: "「だよな！ よし、あんたもこっち側だ」参加者は力強く頷き、周りにも声が広がっていく。", score: { B: -15, A: 5 } },
+      { t: "「ルールには理由があるはず」と留まる", reaction: "「……つまんないやつ。まあ、そういうのも必要か」参加者は肩をすくめて離れていった。", score: { B: 10 } },
+      { t: "「ルールより、決め方を変えるべきだ」と言う", reaction: "「お、制度から変える派か。それも面白い」参加者は面白そうに笑った。", score: { B: -5, C: -5 } } ] } } },
+  chi: { nodes: { start: { title: "庭の住人",
+    text: "誰かが何も言わず、温かい茶をそっとあなたの前に置く。「どうぞ。何もしなくていいのよ」",
+    choices: [
+      { t: "ありがたく、何もしない時間を過ごす", reaction: "ただ風が吹き、茶が冷めていく。誰も急かさない。何も起きない、ということが起きている。", score: { A: -15 } },
+      { t: "何か手伝うことはないか聞く", reaction: "「あら、気がつくのね。……じゃあ、その花に水をやってくれる？」住人は穏やかに微笑む。", score: { B: 5, A: -5 } },
+      { t: "何も求められないのが落ち着かなくて、そわそわする", reaction: "「ふふ、慣れないわよね。慣れなくていいのよ」住人はそれ以上、何も求めてこなかった。", score: { A: 10 } } ] } } },
+  psi: { nodes: { start: { title: "広場の住民",
+    text: "顔見知りの住民が名簿を持って近づいてくる。「来週の清掃当番、空いてるのあなただけなの。日曜の朝8時から、どう？」",
+    choices: [
+      { t: "引き受ける", reaction: "「助かる！ 名簿に書いておくね」住民は嬉しそうに名前を書き込む。横から声がする。「当番はね、一般的には公平に回すものよ。よく決心したわね」ドクダミが一つ増えた。", score: { B: -10, C: 5 }, doku: true },
+      { t: "「隔週なら」と条件をつける", reaction: "「隔週ね、調整してみる」住民は名簿に小さくメモをした。", score: { B: -5 } },
+      { t: "自分の時間を優先して断る", reaction: "「そっか……。まあ、無理にとは言わないけど」住民は名簿を閉じる。横から声がする。「あら、断るなら早めに言ってくれないと、段取りがね」ドクダミが一つ増えた。", score: { A: -10, B: 5 }, doku: true } ] } } },
+  omega: { nodes: { start: { title: "扉の前の声",
+    text: "扉の前に立つと、中から静かな声がする。「どうぞ。……その前に一つだけ。あなたは、なぜこの扉の内側に来たいと思ったの？」",
+    choices: [
+      { t: "「認められた者と話したいから」と答える", reaction: "「……正直ね。いいわ、通って」扉が静かに開く。", score: { B: 15 } },
+      { t: "「静かで質の高い場所が好きだから」と答える", reaction: "「ふふ。……目利きの答えね。どうぞ」扉の向こうから、穏やかな光が差す。", score: { B: 10, C: 5 } },
+      { t: "「別に、誰でも入れるなら入る」と答える", reaction: "「……そう。では今日は、ここまでね」扉は、音もなく閉まった。", score: { B: -15 } } ] } } }
+};
+
+// ---- γ：値段交渉ミニゲーム ----
+const NEGO = {
+  start: { title: "市場の店主",
+    text: "店主が品物をそっと差し出す。「山向こうの工房の一点物だ。言い値は1,200コイン。どうする？」",
+    choices: [
+      { t: "言い値（1,200）で買う", reaction: "「あっさりしてるね。……いい買い物だと思うよ」店主は少し拍子抜けしたように、それでも満足そうに頷いた。決着：1,200コインで購入。", score: { A: 10, C: 5 } },
+      { t: "買わない", reaction: "「そうか。……まあ、無理にとは言わないよ」店主は品物を静かに棚に戻した。決着：買わなかった。", score: { A: -5, C: 5 } },
+      { t: "値切る", goto: "offer" } ] },
+  offer: { title: "市場の店主",
+    text: "「ほう。……いくらなら買うんだい？」店主が静かに目を細める。",
+    choices: [
+      { t: "「800でどう？」", goto: "o800" },
+      { t: "「1,000なら買う」", goto: "o1000" },
+      { t: "「半額、600で」", reaction: "「はっ。……その値段じゃ、作った人間に失礼だ。話は終わりだ」店主は品物を取り上げた。交渉決裂。", score: { A: 10, C: -5 } } ] },
+  o800: { title: "市場の店主",
+    text: "「800か……。正直きつい。……900なら出す。それ以下は無理だ」",
+    choices: [
+      { t: "900で買う", reaction: "「決まりだ。……あんた、静かだけど、いい目をしてる」決着：900コインで購入。言い値より300得した。", score: { C: 15, A: 5 } },
+      { t: "「もう一声、850」", reaction: "「……分かった、850だ。あんた、静かだけどしぶといね」店主は苦笑いしながら包んだ。決着：850コインで購入。", score: { C: 15 } },
+      { t: "やめておく", reaction: "「そうか。……ご縁がなかったね」店主はあっさり引き下がった。決着：買わなかった。", score: { A: -5 } } ] },
+  o1000: { title: "市場の店主",
+    text: "「1,000か。いいとこ突くね。……1,050でどうだ」",
+    choices: [
+      { t: "1,050で買う", reaction: "「毎度。……損はさせない品だよ」決着：1,050コインで購入。", score: { C: 10 } },
+      { t: "「1,000で押し通す」", reaction: "「……まいった、1,000でいいよ。あんたとは長い付き合いになりそうだ」決着：1,000コインで購入。", score: { C: 15, A: 5 } },
+      { t: "やめておく", reaction: "「そうか。……ご縁がなかったね」決着：買わなかった。", score: { A: -5 } } ] }
+};
 
 // ---- タスク定義（A1/A3/A4は特殊、B4は席UI） ----
 const TASKS = [
@@ -177,8 +368,39 @@ const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">"
 function addScore(axis, v) { state.scores[axis] += v; }
 function clamp(v) { return Math.max(-100, Math.min(100, Math.round(v))); }
 
+// ---- 場面演出タイマー（ドクダミ増殖） ----
+let sceneTimer = null;
+function stopSceneFx() { if (sceneTimer) { clearInterval(sceneTimer); sceneTimer = null; } }
+
+// ---- ドクダミ演出（δ・Ψ） ----
+let dokuCount = 0, dokuLineIdx = 0;
+function dokuHTML() {
+  return '<div class="doku-area"><div class="doku-field" id="doku-field"></div><div class="lse-voice" id="lse-voice"></div></div>';
+}
+function growDoku(showLine) {
+  const f = document.getElementById("doku-field");
+  if (!f || dokuCount >= 9) return;
+  dokuCount++;
+  const span = document.createElement("span");
+  span.className = "doku-plant";
+  span.innerHTML = dokuPlant();
+  f.appendChild(span);
+  if (showLine) {
+    const v = document.getElementById("lse-voice");
+    if (v) { v.textContent = "（どこからか声がする）「" + LSE_LINES[dokuLineIdx % LSE_LINES.length] + "」"; dokuLineIdx++; }
+  }
+}
+function startDoku() {
+  dokuCount = 0; dokuLineIdx = 0;
+  growDoku(false);
+  const v = document.getElementById("lse-voice");
+  if (v) v.textContent = "（片隅で、ドクダミが咲いている）";
+  sceneTimer = setInterval(() => growDoku(true), 8000);
+}
+
 // ---- トップ ----
 function renderTop() {
+  stopSceneFx();
   const opts = Object.keys(TYPE_QUADRA).map((t) => '<option value="' + t + '">' + t + "</option>").join("");
   app.innerHTML = '<div class="card"><h1>あなたに合うクアドラはどれ？</h1>' +
     '<p class="lead">ソシオニクスの8つのクアドラには、それぞれ違う「文化」と「空気」がある。この診断は、あなたのタイプを当てるものじゃない。8つの場を巡る旅の中で、どの場の空気が心地いいかを行動から測る、相性診断。</p>' +
@@ -194,21 +416,27 @@ function renderTop() {
   };
 }
 
-// ---- 場面 ----
-function charHTML(kind) {
-  if (kind === "darling") return '<div class="character"><button class="char-face" id="char-btn" aria-label="ダーリンちゃん">🥺</button><div class="char-name">ダーリンちゃん（タップで話す）</div><div><span class="bubble" id="char-bubble">……あら、ダーリン♡ よく来たわね。</span></div></div>';
-  if (kind === "worm") return '<div class="character"><button class="char-face" id="char-btn" aria-label="LSI芋虫">🐛</button><div class="char-name">LSI芋虫（タップで話す）</div><div><span class="bubble" id="char-bubble">あ、どうも。……何か聞きたいことがある、ということかな。</span></div></div>';
+// ---- キャラ ----
+function charSet(kind, qkey) {
+  if (kind === "darling") return DARLING_SETS[qkey] || DARLING_SETS.gamma;
+  return WORM_SETS[qkey] || WORM_SETS.beta;
+}
+function charHTML(kind, qkey) {
+  const set = charSet(kind, qkey);
+  if (kind === "darling") return '<div class="character"><button class="char-face" id="char-btn" aria-label="ダーリンちゃん">🥺</button><div class="char-name">ダーリンちゃん（タップで話す）</div><div><span class="bubble" id="char-bubble">' + esc(set.hello) + "</span></div></div>";
+  if (kind === "worm") return '<div class="character"><button class="char-face" id="char-btn" aria-label="LSI芋虫">🐛</button><div class="char-name">LSI芋虫（タップで話す）</div><div><span class="bubble" id="char-bubble">' + esc(set.hello) + "</span></div></div>";
   return "";
 }
-function bindChar(kind) {
+function bindChar(kind, qkey) {
   const btn = document.getElementById("char-btn");
   if (!btn) return;
+  const set = charSet(kind, qkey);
   const bubble = document.getElementById("char-bubble");
   let taps = 0; const tapTimes = [];
   btn.onclick = () => {
     taps++;
     if (kind === "darling") {
-      bubble.textContent = (taps % 6 === 0) ? DARLING_AWA : DARLING_LINES[(taps - 1) % DARLING_LINES.length];
+      bubble.textContent = (taps % 6 === 0) ? set.awa : set.lines[(taps - 1) % set.lines.length];
       return;
     }
     const now = Date.now(); tapTimes.push(now);
@@ -221,25 +449,70 @@ function bindChar(kind) {
         bubble.textContent = "（復活した）……今のは構造的に理不尽だったと思う。"; }, 4000);
       return;
     }
-    if (!btn.classList.contains("squished")) bubble.textContent = WORM_LINES[(taps - 1) % WORM_LINES.length];
+    if (!btn.classList.contains("squished")) bubble.textContent = set.lines[(taps - 1) % set.lines.length];
   };
 }
+
+// ---- NPCイベント・エンジン ----
+function runTree(nodes, key, box, done) {
+  const node = nodes[key];
+  if (!node) { done(); return; }
+  box.innerHTML = '<div class="event">' + (node.title ? '<div class="npc-name">' + esc(node.title) + "</div>" : "") +
+    '<p class="event-text">' + esc(node.text) + "</p>" +
+    '<div class="event-choices">' + node.choices.map((c, i) => '<button class="choice" data-ev="' + i + '">' + esc(c.t) + "</button>").join("") + "</div></div>";
+  box.querySelectorAll("[data-ev]").forEach((b) => {
+    b.onclick = () => {
+      const c = node.choices[Number(b.dataset.ev)];
+      if (c.score) Object.keys(c.score).forEach((ax) => addScore(ax, c.score[ax]));
+      if (c.doku) growDoku(true);
+      if (c.reaction) {
+        box.innerHTML = '<div class="event"><p class="event-text">' + esc(c.reaction) + '</p><p class="center"><button id="ev-next">つづく</button></p></div>';
+        document.getElementById("ev-next").onclick = () => {
+          if (c.goto) runTree(nodes, c.goto, box, done); else done();
+        };
+      } else if (c.goto) runTree(nodes, c.goto, box, done);
+      else done();
+    };
+  });
+}
+function startEvent(qkey) {
+  const box = document.getElementById("event-box");
+  if (!box) { finishEvent(); return; }
+  if (qkey === "gamma") { runTree(NEGO, "start", box, finishEvent); return; }
+  const ev = EVENTS[qkey];
+  if (ev) runTree(ev.nodes, "start", box, finishEvent); else finishEvent();
+}
+function finishEvent() {
+  const box = document.getElementById("event-box");
+  if (box) box.innerHTML = "";
+  const cb = document.getElementById("comfort-box");
+  if (cb) cb.style.display = "grid";
+}
+
+// ---- 場面 ----
 function renderScene() {
+  stopSceneFx();
   const sc = SCENES[state.sceneIdx];
   const q = QUADRAS[sc.q];
   state.sceneStart = Date.now();
+  const isDoku = (sc.q === "delta" || sc.q === "psi");
   app.innerHTML = '<div class="card"><div class="progress">旅の場面 ' + (state.sceneIdx + 1) + " / 8</div>" +
     '<div class="scene-visual">' + svgMotif(sc.motif, sc.colors[0], sc.colors[1]) + "</div>" +
     '<h2 class="scene-name"><span class="scene-symbol">' + q.symbol + "</span> " + q.theme + "「" + q.scene + "」</h2>" +
     "<p>" + sc.air + '</p><div class="invite">' + sc.invite + "</div>" +
-    charHTML(sc.char) +
-    '<div class="comfort">' +
+    charHTML(sc.char, sc.q) +
+    (isDoku ? dokuHTML() : "") +
+    '<div id="event-box"></div>' +
+    '<div class="comfort" id="comfort-box" style="display:none">' +
     '<button class="choice" data-c="2">ここ、好きだな。残りたい</button>' +
     '<button class="choice" data-c="0.5">まあ、居られる</button>' +
     '<button class="choice" data-c="-1.5">早く次へ行きたい</button></div></div>';
-  bindChar(sc.char);
+  bindChar(sc.char, sc.q);
+  if (isDoku) startDoku();
+  startEvent(sc.q);
   app.querySelectorAll("[data-c]").forEach((b) => {
     b.onclick = () => {
+      stopSceneFx();
       const v = parseFloat(b.dataset.c);
       state.comfort[sc.q] = v;
       state.dwell[sc.q] = Math.round((Date.now() - state.sceneStart) / 1000);
@@ -322,6 +595,7 @@ function barHTML(leftLabel, rightLabel, v) {
   return '<div class="bar-row"><span class="bar-label">' + leftLabel + '</span><div class="bar-track"><div class="bar-fill" style="' + fill + '"></div></div><span class="bar-label r">' + rightLabel + "</span></div>";
 }
 function renderResult() {
+  stopSceneFx();
   const A = clamp(state.scores.A), B = clamp(state.scores.B), C = clamp(state.scores.C);
   const result = quadraBySigns(A >= 0 ? 1 : -1, B >= 0 ? 1 : -1, C >= 0 ? 1 : -1);
   const anti = quadraBySigns(-(A >= 0 ? 1 : -1), -(B >= 0 ? 1 : -1), -(C >= 0 ? 1 : -1));

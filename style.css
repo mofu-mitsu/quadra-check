@@ -83,3 +83,23 @@ label { font-size: .9em; color: #55483a; }
 .seatmap button { margin: 4px; }
 input[type="range"] { width: 100%; margin: 18px 0; }
 .timer { font-variant-numeric: tabular-nums; color: #a33; font-weight: bold; }
+/* ---- v2: NPCイベント ---- */
+.event {
+  margin-top: 20px; border: 1px dashed var(--accent); border-radius: 12px;
+  padding: 14px 16px; background: #fdfaf3;
+}
+.npc-name { font-size: .82em; color: var(--accent); letter-spacing: .06em; margin-bottom: 4px; }
+.event-text { margin: 4px 0 8px; }
+.event-choices { display: grid; gap: 4px; }
+/* ---- v2: ドクダミ演出 ---- */
+.doku-area {
+  margin: 16px 0 4px; border-top: 1px solid var(--line); padding-top: 10px;
+}
+.doku-field { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 2px; min-height: 40px; }
+.doku-plant { display: inline-block; animation: doku-pop .45s ease; }
+.doku-svg { width: 34px; height: 40px; display: block; }
+@keyframes doku-pop {
+  from { transform: scale(.2); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.lse-voice { font-size: .88em; color: #6d5f4d; font-style: italic; min-height: 1.6em; margin-top: 6px; }
