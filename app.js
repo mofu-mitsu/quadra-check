@@ -61,27 +61,27 @@ const DARLING_SETS = {
 // ---- LSI芋虫：クアドラ別セリフ ----
 const WORM_SETS = {
   beta: {
-    hello: "あ、どうも。列の構造についてなら、少し説明できると思います。",
+    hello: "列の話か。……いいよ、構造から説明する。",
     lines: [
-      "列が乱れる、という現象はですね、個々の悪意ではなく、情報伝達の遅延が原因であることが多いと思うんです。",
-      "役割が決まると迷わない、というのは、判断コストを集団側が引き受けている、という構造だと思います。",
-      "掛け声をそろえる行為は、同期による帰属感の生成装置として、非常に合理的な設計だと考えられます。",
-      "はみ出した人が引き戻されるのは、排除ではなく、集団の予測可能性を保つためのフィードバックだと思うんです。",
-      "一体感という感情も、分解すれば『自分の行動の結果が見える範囲が広い』という認知の状態なんじゃないかな、と。",
-      "旗というのは、情報量を最小化した合図なんです。見るだけで全員が同じ前提を共有できる。効率がいいと思うんですよね。",
-      "集団が熱くなる時、個人の感情処理は一時的に集団の処理系に委譲される。それが楽だ、と感じる人もいると思います。"
+      "列が乱れる現象は、個々の悪意じゃなく、情報伝達の遅延として定義できるんだ。",
+      "役割が決まると迷わないのは、判断コストを集団側が肩代わりしているからだ。合理的な設計として説明できる。",
+      "掛け声をそろえる行為は、同期による帰属感の生成装置だ。仕組みは単純で、効果は大きい。",
+      "はみ出した人が引き戻されるのは排除じゃない。集団の予測可能性を保つフィードバックとして定義できるんだ。",
+      "一体感という感情も、分解すれば『自分の行動の結果が見える範囲が広い』という認知の状態だ。",
+      "旗は情報量を最小化した合図だ。見るだけで全員が同じ前提を共有できる。効率がいい。🐛",
+      "集団が熱くなる時、個人の感情処理は一時的に集団の処理系へ委譲される。楽だと感じるのは、その委譲のコストが低いからだ。"
     ]
   },
   phi: {
-    hello: "あ、どうも。……ルールの話ですか。それなら少し、考えがあります。",
+    hello: "ルールの話か。それなら定義から始めよう。",
     lines: [
-      "ルールというのは、作られた時点の前提を固定化したものなんです。前提が変われば、ルールだけが残る。それが軋轢の構造だと思います。",
-      "『おかしい』という感覚は、直感ではなく、内部モデルと現実の予測誤差として説明できるんじゃないかな、と。",
-      "壊す、という行為も、実際には再設計の前工程であって、破壊そのものが目的になることは稀だと思うんです。",
-      "秩序に従うコストと、秩序を変えるコスト。人はだいたい、前者を過小評価して後者を過大評価する傾向があると考えられます。",
-      "異を唱える人が出るかどうかは、その集団が『反論を情報として処理できるか』にかかっていると思うんです。",
-      "古い旗が燃える時、人々は象徴を燃やしているんです。実体はとうに機能していない、という確認作業なんじゃないかな。",
-      "革命の熱も、冷めてしまえば日常の処理に戻る。残るのは新しいルールの文書だけ、というのは少し寂しい構造だと思います。"
+      "ルールとは、作られた時点の前提を固定化した文書だ。前提が変わればルールだけが残って軋轢になる。構造はそれだけだ。",
+      "『おかしい』という感覚は直感じゃない。内部モデルと現実の予測誤差として説明できる。",
+      "壊す行為は再設計の前工程だ。破壊そのものが目的になるケースは、統計的には稀だと思う。",
+      "秩序に従うコストと、秩序を変えるコスト。人間は前者を過小評価して、後者を過大評価する傾向がある。",
+      "異を唱える人が出るかどうかは、その集団が反論を『情報』として処理できるかどうかで決まる。",
+      "古い旗が燃える時、燃えているのは象徴だ。実体はとうに機能していない。その確認作業として定義できる。🐛",
+      "革命の熱が冷めてしまえば、残るのは新しいルールの文書だけだ。少し寂しいが、構造としては正しい。"
     ]
   }
 };
@@ -95,7 +95,17 @@ const LSE_LINES = [
   "普通はね、先に報告してから動くものよ",
   "あら、その置き方。……前回と違うわよね。統一しておきましょう",
   "気持ちは大事。でも、締切はもっと大事よ",
-  "言っておくけど、これはあなたのためを思って言ってるのよ"
+  "言っておくけど、これはあなたのためを思って言ってるのよ",
+  "それを踏まえて、もう一度考えてみてください",
+  "するのは私じゃないからね〜、あなただからね〜",
+  "しんどくなるのは自分だよ〜？ そのために練習するんでしょ〜",
+  "先日聞いた時点では『かも』って話でしたよ。どこで話変わっちゃったんですかー？",
+  "説明が足りな過ぎて全然わからなかった。……別件ってことですね！ 了解です",
+  "これはゴールではなくて、スタートです。今はそのための準備期間です",
+  "休むことは権利です。主張してください。ただ、決められた連絡の義務は果たしてください",
+  "それを、逃げているように思えます",
+  "細かく予定を確認して指摘をしてなど、だれもしたくありません",
+  "干渉されたくないけど、必要なことだけ対応してほしい。そんな印象を受けます"
 ];
 
 // ---- ドクダミの株（茎・ハート型の葉・白い4弁の十字の花） ----
@@ -248,7 +258,7 @@ const EVENTS = {
     choices: [
       { t: "引き受ける", reaction: "「助かる！ 名簿に書いておくね」住民は嬉しそうに名前を書き込む。横から声がする。「当番はね、一般的には公平に回すものよ。よく決心したわね」ドクダミが一つ増えた。", score: { B: -10, C: 5 }, doku: true },
       { t: "「隔週なら」と条件をつける", reaction: "「隔週ね、調整してみる」住民は名簿に小さくメモをした。", score: { B: -5 } },
-      { t: "自分の時間を優先して断る", reaction: "「そっか……。まあ、無理にとは言わないけど」住民は名簿を閉じる。横から声がする。「あら、断るなら早めに言ってくれないと、段取りがね」ドクダミが一つ増えた。", score: { A: -10, B: 5 }, doku: true } ] } } },
+      { t: "自分の時間を優先して断る", reaction: "住民は名簿を閉じかけ、横から声が割り込む。「あら、断るのは自由よ。ただね、それを踏まえて、もう一度考えてみてくれない？ 段取りはもう組み始めてるの」引く気配がない。ドクダミが一つ増えた。", score: { A: -10, B: 5 }, doku: true } ] } } },
   omega: { nodes: { start: { title: "扉の前の声",
     text: "扉の前に立つと、中から静かな声がする。「どうぞ。……その前に一つだけ。あなたは、なぜこの扉の内側に来たいと思ったの？」",
     choices: [
@@ -259,30 +269,30 @@ const EVENTS = {
 
 // ---- γ：値段交渉ミニゲーム ----
 const NEGO = {
-  start: { title: "市場の店主",
+  start: { title: "市場の店主", price: 1200,
     text: "店主が品物をそっと差し出す。「山向こうの工房の一点物だ。言い値は1,200コイン。どうする？」",
     choices: [
-      { t: "言い値（1,200）で買う", reaction: "「あっさりしてるね。……いい買い物だと思うよ」店主は少し拍子抜けしたように、それでも満足そうに頷いた。決着：1,200コインで購入。", score: { A: 10, C: 5 } },
+      { t: "言い値（1,200）で買う", reaction: "「あっさりしてるね。……いい買い物だと思うよ」店主は少し拍子抜けしたように、それでも満足そうに頷いた。決着：1,200コインで購入。", score: { A: 10, C: 5 }, finalPrice: 1200 },
       { t: "買わない", reaction: "「そうか。……まあ、無理にとは言わないよ」店主は品物を静かに棚に戻した。決着：買わなかった。", score: { A: -5, C: 5 } },
       { t: "値切る", goto: "offer" } ] },
-  offer: { title: "市場の店主",
+  offer: { title: "市場の店主", price: 1200,
     text: "「ほう。……いくらなら買うんだい？」店主が静かに目を細める。",
     choices: [
-      { t: "「800でどう？」", goto: "o800" },
-      { t: "「1,000なら買う」", goto: "o1000" },
-      { t: "「半額、600で」", reaction: "「はっ。……その値段じゃ、作った人間に失礼だ。話は終わりだ」店主は品物を取り上げた。交渉決裂。", score: { A: 10, C: -5 } } ] },
-  o800: { title: "市場の店主",
+      { t: "「800でどう？」と、静かに相場を提示する", goto: "o800" },
+      { t: "「1,000なら今すぐ買う。決めるのは今だ」と即決を迫る", goto: "opress", fitMap: { beta: 5, gamma: -5 } },
+      { t: "「半額、600で」と強く押し込む", reaction: "「はっ。……その値段じゃ、作った人間に失礼だ。話は終わりだ」店主は品物を取り上げた。交渉決裂。勢いはあったが、この市場では通じなかった。", score: { A: 10, C: -5 }, fitMap: { beta: 10, gamma: -10 } } ] },
+  o800: { title: "市場の店主", price: 800,
     text: "「800か……。正直きつい。……900なら出す。それ以下は無理だ」",
     choices: [
-      { t: "900で買う", reaction: "「決まりだ。……あんた、静かだけど、いい目をしてる」決着：900コインで購入。言い値より300得した。", score: { C: 15, A: 5 } },
-      { t: "「もう一声、850」", reaction: "「……分かった、850だ。あんた、静かだけどしぶといね」店主は苦笑いしながら包んだ。決着：850コインで購入。", score: { C: 15 } },
+      { t: "900で買う", reaction: "「決まりだ。……あんた、静かだけど、いい目をしてる」決着：900コインで購入。言い値より300得した。", score: { C: 15, A: 5 }, finalPrice: 900 },
+      { t: "「もう一声、850」", reaction: "「……分かった、850だ。あんた、静かだけどしぶといね」店主は苦笑いしながら包んだ。決着：850コインで購入。", score: { C: 15 }, finalPrice: 850 },
       { t: "やめておく", reaction: "「そうか。……ご縁がなかったね」店主はあっさり引き下がった。決着：買わなかった。", score: { A: -5 } } ] },
-  o1000: { title: "市場の店主",
-    text: "「1,000か。いいとこ突くね。……1,050でどうだ」",
+  opress: { title: "市場の店主", price: 1000,
+    text: "「……今すぐ、か。勢いのある客は嫌いじゃない。……1,050なら、今この場で決着だ」店主は品物をあなたの方へ押し出す。",
     choices: [
-      { t: "1,050で買う", reaction: "「毎度。……損はさせない品だよ」決着：1,050コインで購入。", score: { C: 10 } },
-      { t: "「1,000で押し通す」", reaction: "「……まいった、1,000でいいよ。あんたとは長い付き合いになりそうだ」決着：1,000コインで購入。", score: { C: 15, A: 5 } },
-      { t: "やめておく", reaction: "「そうか。……ご縁がなかったね」決着：買わなかった。", score: { A: -5 } } ] }
+      { t: "1,050で即決する", reaction: "「毎度。……その勢い、嫌いじゃないよ」決着：1,050コインで購入。速さで押し切った。", score: { A: 10, C: 5 }, fitMap: { beta: 10 }, finalPrice: 1050 },
+      { t: "「いや、1,000だ」と押し切る", reaction: "「……まいった、1,000でいいよ。あんたとは長い付き合いになりそうだ」決着：1,000コインで購入。押し切ったが、店主の目は少し冷めていた。", score: { A: 15, B: 5 }, fitMap: { beta: 15, gamma: -5 }, finalPrice: 1000 },
+      { t: "やっぱり相場を見てから決める", reaction: "「……ふうん、引く時は引くんだね」店主は品物を棚に戻した。決着：買わなかった。", score: { C: 5, A: -5 } } ] }
 };
 
 // ---- タスク定義（A1/A3/A4は特殊、B4は席UI） ----
@@ -352,13 +362,29 @@ const SEATS = [
 
 // ---- B2：紹介文チップ（LSI芋虫） ----
 const CHIPS = [
-  { t: "集まりのまとめ役", v: 10 }, { t: "ルールを守る番人", v: 10 },
-  { t: "構造を分解するのが仕事", v: 10 }, { t: "機械いじりの担当", v: 10 },
-  { t: "順番と手順を決める人", v: 10 }, { t: "列が乱れたら直す係", v: 10 },
-  { t: "実は謙虚", v: -10 }, { t: "ちょっと理屈っぽいけど優しい", v: -10 },
-  { t: "場を和ませる", v: -10 }, { t: "誰にでも分け隔てない", v: -10 },
-  { t: "困った人を放っておけない", v: -10 }, { t: "ほんわかした空気の持ち主", v: -10 }
+  { t: "集まりのまとめ役", d: "集まりのまとめ役", v: 10 }, { t: "ルールを守る番人", d: "ルールを守る番人", v: 10 },
+  { t: "構造を分解するのが仕事", d: "構造を分解するのが仕事", v: 10 }, { t: "機械いじりの担当", d: "機械いじりの担当", v: 10 },
+  { t: "順番と手順を決める人", d: "順番と手順を決める人", v: 10 }, { t: "列が乱れたら直す係", d: "列が乱れたら直す係", v: 10 },
+  { t: "実は謙虚", d: "実は謙虚な", v: -10 }, { t: "ちょっと理屈っぽいけど優しい", d: "ちょっと理屈っぽいけど優しい", v: -10 },
+  { t: "場を和ませる", d: "場を和ませる", v: -10 }, { t: "誰にでも分け隔てない", d: "誰にでも分け隔てない", v: -10 },
+  { t: "困った人を放っておけない", d: "困った人を放っておけない", v: -10 }, { t: "ほんわかした空気の持ち主", d: "ほんわかした空気の持ち主", v: -10 }
 ];
+
+// ---- B2：紹介されたLSI芋虫本人の反応（新口調） ----
+const WORM_INTRO_REACTIONS = {
+  plus: [
+    "……その紹介、定義として正確だ。役割と機能で対象を切り取るのは、正しい手順だと思う。🐛",
+    "うん。肩書きと構造で定義されている。……悪くない切り取り方だ。"
+  ],
+  minus: [
+    "……人柄で定義したな。それは対象の属性じゃなく、観察者の主観の記録として分類される。……まあ、否定はしない。",
+    "その切り取り方は主観寄りだ。……照れているわけじゃない。分類上の話をしているだけだ。🐛"
+  ],
+  mixed: [
+    "役割と人柄、両方の軸で定義したな。……両義的な定義として、成立はしている。",
+    "構造と印象の混成か。……定義としては曖昧だが、対象の実態には近いかもしれない。"
+  ]
+};
 
 // ---- イベント選択の「場への収まり具合」（fit：その場のクアドラへのボーナス） ----
 const EVENT_FIT = {
@@ -370,20 +396,21 @@ const EVENT_FIT = {
   "引き受ける": 10, "「隔週なら」と条件をつける": 5, "自分の時間を優先して断る": -10,
   "「認められた者と話したいから」と答える": 10, "「静かで質の高い場所が好きだから」と答える": 5, "「別に、誰でも入れるなら入る」と答える": -10,
   "言い値（1,200）で買う": 5, "買わない": 0,
+  "「800でどう？」と、静かに相場を提示する": 5,
   "900で買う": 10, "「もう一声、850」": 10, "やめておく": 0,
-  "1,050で買う": 5, "「1,000で押し通す」": 10, "「半額、600で」": -5
+  "やっぱり相場を見てから決める": 5
 };
 
 // ---- 結果画面：ダーリンちゃんの締めコメント（{anti} はアンチクアドラ名に置換） ----
 const DARLING_CLOSING = {
-  alpha: "αの工房が一番楽だったのね、ダーリン♡ 思いつきにすぐ乗れる軽さ、あなたには合ってたみたい。……でもね、{anti}が一番遠かったこと、私はちゃんと見てたわよ♡ あの場の空気、思い出すだけで少し顔が曇るでしょ？",
-  beta: "βの集会に残ったのね、ダーリン♡ 列の中の高揚、あれが心地いい人は意外と少ないの。……そして{anti}が最下位。あの空気からは、あなたは静かに距離を取ってたわね♡",
-  gamma: "γの市場が合ったのね、ダーリン♡ 一人で決めて、一人で責任を取る冷たさ……ふふ、私と少し似てるかも。{anti}の空気は、あなたには騒がしすぎたみたいね♡",
-  delta: "δの家が一番落ち着いたのね、ダーリン♡ 丁寧さと段取りの場……ドクダミの圧も、あなたには心地よさのうちだったのかしら。{anti}とは、そもそも時間の流れ方が違ったみたいね♡",
-  phi: "Φの集いに火がついたのね、ダーリン♡ 壊して作り直す熱、あれに乗れる人は強いわ。……{anti}の静けさは、あなたには退屈を通り越して窮屈だったみたいね♡",
-  chi: "Χの庭が一番だったのね、ダーリン♡ 何も求められない場所で、あんなに長く居られるなんて。{anti}の圧は、あなたには少し強すぎたみたい……ふふ、無理もないわ♡",
-  psi: "Ψの広場が合ったのね、ダーリン♡ 顔見知りの気遣いと、根を張るドクダミと。あの感じが『ちょうどいい』人は、町に一人はいないと困るのよ。{anti}は、あなたには少し遠い文化だったみたいね♡",
-  omega: "あら、Ωのサロンが一番だったの、ダーリン♡ 扉の内側の静けさ、選ばれる側の空気……ふふ、悪くない趣味ね。{anti}の空気は、あなたには少し軽すぎたみたいだけど♡"
+  alpha: "αの工房ね、ダーリン♡ 思いつきに乗る速さだけ見れば、あなたはあの場の住人だった。……ただ、{anti}で見せた顔、あれが本性に近いんじゃない？ 楽な場では誰でもいい顔ができるのよ♡",
+  beta: "βの列に残ったのね、ダーリン♡ 高揚に身を任せられる人間は少ない。あれを『心地いい』と言える時点で、あなたは結構、特殊よ。……{anti}からは早々に視線を切ってたけど。見てたわよ♡",
+  gamma: "γの市場。ふふ、ダーリン♡ 一人で決めて一人で背負う冷たさが平気なのね。……私と同類、とは言わないでおく。{anti}の空気、あなたには『無駄』に見えてたでしょ。当たってる？",
+  delta: "δの家、ドクダミの圧ごと受け入れたのね、ダーリン♡ あの再考の圧を『心地いい』側に分類できる人間、珍しいわ。……{anti}とは時間の流れ方からして合わなかったみたいね。当然かも♡",
+  phi: "Φの集いに火がついたのね、ダーリン♡ 壊す側に回る快感、覚えちゃった？ ……{anti}の静けさは、あなたには退屈じゃなくて『窒息』だったみたい。ログに出てたわよ♡",
+  chi: "Χの庭で何もしない時間を過ごせたのね、ダーリン♡ あの無為に耐えられるのは、才能よ。……{anti}の圧は強すぎた？ ふふ、あなたの『早く離れたい』、結構本気だったわね♡",
+  psi: "Ψの広場か。ダーリン♡ 顔見知りの気遣いと根を張るドクダミ、その両方を『ちょうどいい』に収めたのね。……{anti}は文化圏からして遠かったみたい。無理に近づかなくていい場所もあるのよ♡",
+  omega: "Ωのサロンが一番、ね。ダーリン♡ 選ばれる側の静けさが好きなの、あなた。……{anti}の軽さは物足りなかったんでしょ。品定めの目が、もう出ちゃってるわよ♡"
 };
 
 // ---- ダーリンへの回答：Se検出カテゴリ（優先順位つき） ----
@@ -420,9 +447,9 @@ const SE_CATEGORIES = [
       "距離を取りたいのね、分かるわ。私も自分の扉は自分で閉めたいタイプ。……気が合うじゃない♡" ] }
 ];
 const DARLING_CALM = [
-  "ふふ、穏やかな答えね、ダーリン♡ ……その落ち着き、本物か演出か、私の中でまだ保留中よ♡",
-  "そう答えるのね。……ねぇ、今の答え、後から自分で読み返したらどう思うかしら。少し楽しみ♡",
-  "ありがとう、ダーリン♡ 答えの中身より、答え方にあなたが出てたわ。それで十分♡"
+  "……ふうん。そういう答え方をするのね、ダーリン♡ 中身はともかく、迷いのなさだけは記録しておくわ",
+  "答えたね。……ねぇダーリン♡、今の答え、自分で点数をつけるなら何点？ 私の採点は、まだ言わないけど♡",
+  "……なるほど。所属の話になると、人はだいたい本音か建前のどちらかに寄る。あなたはどっちに寄ってたと思う？"
 ];
 const state = { name: "", selfType: "", scores: { A: 0, B: 0, C: 0 },
   sceneIdx: 0, taskIdx: 0, comfort: {}, dwell: {}, fit: {}, history: [], sceneStart: 0 };
@@ -435,6 +462,7 @@ function clamp(v) { return Math.max(-100, Math.min(100, Math.round(v))); }
 let sceneTimer = null, taskTimer = null;
 function stopAllTimers() {
   if (sceneTimer) { clearInterval(sceneTimer); sceneTimer = null; }
+  if (typeof propTimeout !== "undefined" && propTimeout) { clearTimeout(propTimeout); propTimeout = null; }
   if (taskTimer) { clearInterval(taskTimer); taskTimer = null; }
   if (app.dataset.iv) { clearInterval(Number(app.dataset.iv)); delete app.dataset.iv; }
 }
@@ -498,6 +526,122 @@ function startDoku() {
   sceneTimer = setInterval(() => growDoku(true), 8000);
 }
 
+// ---- 場面の小道具（遊び要素・採点には影響しない） ----
+let propTimeout = null;
+function teaSVG() {
+  return '<svg viewBox="0 0 200 110" class="tea-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<ellipse cx="70" cy="68" rx="34" ry="24" fill="#8a5a44"/>' +
+    '<path d="M40 60l-18 8 7 9 15-7z" fill="#8a5a44"/>' +
+    '<path d="M102 54a17 17 0 0 1 0 28" fill="none" stroke="#8a5a44" stroke-width="6"/>' +
+    '<ellipse cx="70" cy="46" rx="14" ry="5" fill="#6e4634"/><circle cx="70" cy="41" r="4" fill="#6e4634"/>' +
+    '<path d="M140 80h44l-6 19a6 6 0 0 1-6 5h-20a6 6 0 0 1-6-5z" fill="#fdfbf4" stroke="#b9a888" stroke-width="2"/>' +
+    '<ellipse cx="162" cy="80" rx="21" ry="4" fill="#cfe0c0"/>' +
+    '<g class="steam-g" stroke="#9db8a4" stroke-width="3" fill="none" stroke-linecap="round">' +
+    '<path d="M154 68c-3-6 3-8 0-14"/><path d="M166 68c-3-6 3-8 0-14"/></g></svg>';
+}
+function propHTML(qkey) {
+  if (qkey === "alpha") return '<div class="prop"><div class="prop-title">🧷 工房のメモ板</div><div class="sticky-board" id="sticky-board"></div><button class="ghost prop-btn" id="prop-btn">付箋を貼る</button> <span class="small" id="prop-count">貼った付箋：0枚</span></div>';
+  if (qkey === "beta") return '<div class="prop"><div class="prop-title">🥁 集会の太鼓</div><button class="prop-emoji" id="prop-btn" aria-label="太鼓を叩く">🥁</button><div class="small" id="prop-count">叩いた回数：0</div></div>';
+  if (qkey === "gamma") return '<div class="prop"><div class="prop-title">🪙 コインの山</div><div class="coin-stack" id="coin-stack"></div><button class="ghost prop-btn" id="prop-btn">コインを積む</button> <span class="small" id="prop-count">積んだコイン：0枚</span></div>';
+  if (qkey === "delta" || qkey === "psi") return '<div class="prop"><div class="prop-title">🌿 ドクダミ摘み</div><button class="ghost prop-btn" id="prop-btn">ドクダミを摘む</button> <span class="small" id="prop-count">摘んだ数：0</span><div class="small" id="prop-line"></div></div>';
+  if (qkey === "phi") return '<div class="prop"><div class="prop-title">🪧 集いの看板</div><div class="sign-board tilted" id="sign-board">今のままじゃダメだ</div><button class="ghost prop-btn" id="prop-btn">看板を直す</button> <span class="small" id="prop-count">直した回数：0</span></div>';
+  if (qkey === "chi") return '<div class="prop"><div class="prop-title">🍵 庭のお茶</div><div class="tea-set" id="tea-set">' + teaSVG() + '</div><button class="ghost prop-btn" id="prop-btn">お茶を注ぐ</button> <span class="small" id="prop-count">飲んだ杯数：0</span><div class="small" id="prop-line">急須が温まっている。誰も急かさない。</div></div>';
+  if (qkey === "omega") return '<div class="prop"><div class="prop-title">🚪 サロンの扉</div><button class="ghost prop-btn" id="prop-btn">扉をノックする</button> <span class="small" id="prop-count">ノック：0回</span><div class="small" id="prop-line"></div></div>';
+  return "";
+}
+function bindProp(qkey) {
+  const btn = document.getElementById("prop-btn");
+  if (!btn) return;
+  const count = document.getElementById("prop-count");
+  const line = document.getElementById("prop-line");
+  let n = 0;
+  if (qkey === "alpha") {
+    const board = document.getElementById("sticky-board");
+    const colors = ["#fff3a6", "#ffd9e8", "#c9ecd2", "#cfe4ff"];
+    const words = ["ためす", "これ何に使う？", "あとで考える", "面白そう", "分解したい", "メモ"];
+    btn.onclick = () => {
+      n++;
+      const s = document.createElement("span");
+      s.className = "sticky";
+      s.style.background = colors[n % colors.length];
+      s.style.transform = "rotate(" + ((n * 37) % 13 - 6) + "deg)";
+      s.textContent = words[n % words.length];
+      board.appendChild(s);
+      count.textContent = "貼った付箋：" + n + "枚";
+    };
+    return;
+  }
+  if (qkey === "beta") {
+    btn.onclick = () => {
+      n++;
+      btn.classList.remove("shake"); void btn.offsetWidth; btn.classList.add("shake");
+      count.textContent = "叩いた回数：" + n + (n >= 5 ? "（列の声が少しそろってきた）" : "");
+    };
+    return;
+  }
+  if (qkey === "gamma") {
+    const stack = document.getElementById("coin-stack");
+    btn.onclick = () => {
+      n++;
+      const s = document.createElement("span");
+      s.textContent = "🪙";
+      stack.appendChild(s);
+      count.textContent = "積んだコイン：" + n + "枚";
+    };
+    return;
+  }
+  if (qkey === "delta" || qkey === "psi") {
+    const lines = ["摘んだ。……なのに、増えた気がする", "根が残るからね。摘んでも増えるのよ", "摘んだ分だけ、声が近くなった気がする", "摘む手つきを、どこかで見られている気がする"];
+    btn.onclick = () => {
+      n++;
+      growDoku(true);
+      count.textContent = "摘んだ数：" + n;
+      if (line) line.textContent = lines[(n - 1) % lines.length];
+    };
+    return;
+  }
+  if (qkey === "phi") {
+    const sign = document.getElementById("sign-board");
+    btn.onclick = () => {
+      n++;
+      sign.classList.remove("tilted");
+      count.textContent = "直した回数：" + n;
+      if (propTimeout) clearTimeout(propTimeout);
+      propTimeout = setTimeout(() => { const s2 = document.getElementById("sign-board"); if (s2) s2.classList.add("tilted"); }, 2600);
+    };
+    return;
+  }
+  if (qkey === "chi") {
+    const set = document.getElementById("tea-set");
+    let phase = 0; // 0:注げる 1:飲める
+    btn.onclick = () => {
+      if (phase === 0) {
+        set.classList.add("steaming");
+        line.textContent = "注いだ。湯気が立っている。……誰も何も言わない。";
+        btn.textContent = "飲む";
+        phase = 1;
+      } else {
+        n++;
+        set.classList.remove("steaming");
+        line.textContent = "……温かい。何も起きない、ということが起きている。";
+        count.textContent = "飲んだ杯数：" + n;
+        btn.textContent = "おかわりを注ぐ";
+        phase = 0;
+      }
+    };
+    return;
+  }
+  if (qkey === "omega") {
+    const replies = ["（……静かだ。聞こえていないのかもしれない）", "（中から、静かな声）「どなた？」", "（声）「ノックは2回まで、と決まっているの」", "（声）「……気が向いたら、開けるわ」", "（声）「その根気、嫌いじゃないわよ」"];
+    btn.onclick = () => {
+      n++;
+      count.textContent = "ノック：" + n + "回";
+      if (line) line.textContent = replies[Math.min(n - 1, replies.length - 1)];
+    };
+    return;
+  }
+}
+
 // ---- トップ ----
 function renderTop() {
   stopAllTimers();
@@ -547,7 +691,7 @@ function bindChar(kind, qkey) {
       bubble.textContent = "お前はSLEか？やめろ！";
       btn.disabled = true;
       setTimeout(() => { btn.classList.remove("squished"); btn.disabled = false;
-        bubble.textContent = "（復活した）……今のは構造的に理不尽だったと思う。"; }, 4000);
+        bubble.textContent = "（復活した）……今のは構造的に理不尽だ。記録しておく。"; }, 4000);
       return;
     }
     if (!btn.classList.contains("squished")) bubble.textContent = set.lines[(taps - 1) % set.lines.length];
@@ -559,6 +703,7 @@ function runTree(nodes, key, box, done, qkey) {
   const node = nodes[key];
   if (!node) { done(); return; }
   box.innerHTML = '<div class="event">' + (node.title ? '<div class="npc-name">' + esc(node.title) + "</div>" : "") +
+    (node.price ? '<div class="nego-visual"><span class="nego-coins">💰🪙🪙🪙</span><span class="price-tag">提示 ' + node.price + ' コイン</span></div>' : "") +
     '<p class="event-text">' + esc(node.text) + "</p>" +
     '<div class="event-choices">' + node.choices.map((c, i) => '<button class="choice" data-ev="' + i + '">' + esc(c.t) + "</button>").join("") + "</div></div>";
   box.querySelectorAll("[data-ev]").forEach((b) => {
@@ -567,9 +712,10 @@ function runTree(nodes, key, box, done, qkey) {
       if (c.score) Object.keys(c.score).forEach((ax) => addScore(ax, c.score[ax]));
       const f = EVENT_FIT[c.t];
       if (typeof f === "number" && qkey) state.fit[qkey] = (state.fit[qkey] || 0) + f;
+      if (c.fitMap) Object.keys(c.fitMap).forEach((k) => { state.fit[k] = (state.fit[k] || 0) + c.fitMap[k]; });
       if (c.doku) growDoku(true);
       if (c.reaction) {
-        box.innerHTML = '<div class="event"><p class="event-text">' + esc(c.reaction) + '</p><p class="center"><button id="ev-next">つづく</button></p></div>';
+        box.innerHTML = '<div class="event">' + (c.finalPrice ? '<div class="nego-visual settled"><span class="nego-coins">💰</span><span class="price-tag">' + c.finalPrice + ' コインで決着</span></div>' : "") + '<p class="event-text">' + esc(c.reaction) + '</p><p class="center"><button id="ev-next">つづく</button></p></div>';
         document.getElementById("ev-next").onclick = () => {
           if (c.goto) runTree(nodes, c.goto, box, done, qkey); else done();
         };
@@ -604,6 +750,7 @@ function renderScene() {
     '<h2 class="scene-name"><span class="scene-symbol">' + q.symbol + "</span> " + q.theme + "「" + q.scene + "」</h2>" +
     "<p>" + sc.air + '</p><div class="invite">' + sc.invite + "</div>" +
     charHTML(sc.char, sc.q) +
+    '<div id="prop-box">' + propHTML(sc.q) + "</div>" +
     (isDoku ? dokuHTML() : "") +
     '<div id="event-box"></div>' +
     '<div class="comfort" id="comfort-box" style="display:none">' +
@@ -612,22 +759,37 @@ function renderScene() {
     '<button class="choice" data-c="-1.5">早く次へ行きたい</button></div></div>';
   bindBack();
   bindChar(sc.char, sc.q);
+  bindProp(sc.q);
   if (isDoku) startDoku();
   startEvent(sc.q);
+  function proceedScene(v) {
+    stopAllTimers();
+    state.comfort[sc.q] = v;
+    state.dwell[sc.q] = Math.round((Date.now() - state.sceneStart) / 1000);
+    Object.keys(sc.weights).forEach((ax) => addScore(ax, v * sc.weights[ax] * 5));
+    state.sceneIdx++;
+    if (state.sceneIdx < SCENES.length) enterStep(); else { state.taskIdx = 0; enterStep(); }
+  }
+  let leaveBlock = false;
   app.querySelectorAll("[data-c]").forEach((b) => {
     b.onclick = () => {
-      stopAllTimers();
       const v = parseFloat(b.dataset.c);
-      state.comfort[sc.q] = v;
-      state.fit[sc.q] = (state.fit[sc.q] || 0) + (v === 2 ? 20 : v === 0.5 ? 5 : -20);
-      state.dwell[sc.q] = Math.round((Date.now() - state.sceneStart) / 1000);
-      Object.keys(sc.weights).forEach((ax) => addScore(ax, v * sc.weights[ax] * 5));
-      state.sceneIdx++;
-      if (state.sceneIdx < SCENES.length) enterStep(); else { state.taskIdx = 0; enterStep(); }
+      if (isDoku && v === -1.5 && !leaveBlock) {
+        leaveBlock = true;
+        growDoku(true);
+        const cb = document.getElementById("comfort-box");
+        cb.innerHTML = '<div class="event"><div class="npc-name">どこからか声がする</div>' +
+          '<p class="event-text">「それを踏まえて、もう一度考えてみてください」——引く気配のない声と、視線の圧。ドクダミが1株、増えた。</p>' +
+          '<div class="event-choices"><button class="choice" id="leave-stay">……もう少し居る</button>' +
+          '<button class="choice" id="leave-go">それでも次へ行く</button></div></div>';
+        document.getElementById("leave-stay").onclick = () => proceedScene(0.5);
+        document.getElementById("leave-go").onclick = () => proceedScene(-1.5);
+        return;
+      }
+      proceedScene(v);
     };
   });
 }
-
 // ---- タスク ----
 function renderTask() {
   stopAllTimers();
@@ -719,37 +881,45 @@ function renderSlider(t, head) {
 }
 function renderChips(t, head) {
   app.innerHTML = '<div class="card">' + head + "<h2>" + t.title + "</h2><p>" + t.text + "</p>" +
+    '<p class="small">選んだ言葉は、押した順にそのまま並びます。</p>' +
     '<div class="chip-built" id="chip-built">（まだ選ばれていない）</div>' +
     '<div class="chip-pool">' + CHIPS.map((c, i) => '<button class="chip" data-chip="' + i + '">' + esc(c.t) + "</button>").join("") + "</div>" +
     '<p class="small center">選んだ数：<span id="chip-count">0</span> / 4</p>' +
-    '<p class="center"><button id="chip-decide" disabled>この紹介文で決める</button></p></div>';
+    '<p class="center"><button id="chip-decide" disabled>この紹介文で決める</button></p>' +
+    '<div id="chip-reaction"></div></div>';
   bindBack();
-  const picked = new Set();
+  const order = [];
   const built = document.getElementById("chip-built");
   const count = document.getElementById("chip-count");
   const decide = document.getElementById("chip-decide");
   function refresh() {
-    const list = [...picked].sort((a, b) => a - b);
-    built.textContent = list.length ? "「" + list.map((i) => CHIPS[i].t).join("、") + "な、LSI芋虫です」" : "（まだ選ばれていない）";
-    count.textContent = list.length;
-    decide.disabled = list.length === 0;
+    built.textContent = order.length ? "「" + order.map((i) => CHIPS[i].d).join("、") + "、LSI芋虫です」" : "（まだ選ばれていない）";
+    count.textContent = order.length;
+    decide.disabled = order.length === 0;
   }
   app.querySelectorAll("[data-chip]").forEach((b) => {
     b.onclick = () => {
       const i = Number(b.dataset.chip);
-      if (picked.has(i)) { picked.delete(i); b.classList.remove("selected"); }
-      else if (picked.size < 4) { picked.add(i); b.classList.add("selected"); }
+      const at = order.indexOf(i);
+      if (at >= 0) { order.splice(at, 1); b.classList.remove("selected"); }
+      else if (order.length < 4) { order.push(i); b.classList.add("selected"); }
       refresh();
     };
   });
   decide.onclick = () => {
     let sum = 0;
-    picked.forEach((i) => { sum += CHIPS[i].v; });
+    order.forEach((i) => { sum += CHIPS[i].v; });
     addScore("B", sum);
-    nextTask();
+    decide.disabled = true;
+    const kind = sum > 0 ? "plus" : (sum < 0 ? "minus" : "mixed");
+    const pool = WORM_INTRO_REACTIONS[kind];
+    const reply = pool[Math.floor(Math.random() * pool.length)];
+    const box = document.getElementById("chip-reaction");
+    box.innerHTML = '<div class="character"><span class="char-face-static">🐛</span><div class="char-name">紹介されたLSI芋虫</div><div><span class="bubble">' + esc(reply) + '</span></div></div>' +
+      '<p class="center"><button id="chip-next">つづく</button></p>';
+    document.getElementById("chip-next").onclick = () => nextTask();
   };
-}
-function renderSeats(t, head) {
+}function renderSeats(t, head) {
   app.innerHTML = '<div class="card">' + head + "<h2>" + t.title + "</h2><p>" + t.text + "</p>" +
     '<div class="seatmap">' + SEATS.map((s, i) => '<button class="choice" style="display:inline-block;width:auto" data-i="' + i + '">' + s.t + "</button>").join("") + "</div></div>";
   bindBack();
@@ -766,34 +936,84 @@ function barHTML(leftLabel, rightLabel, v) {
   return '<div class="bar-row"><span class="bar-label">' + leftLabel + '</span><div class="bar-track"><div class="bar-fill" style="' + fill + '"></div></div><span class="bar-label r">' + rightLabel + "</span></div>";
 }
 function affinityScores(A, B, C) {
+  // 総合スコア＝軸成分（正規化して寄与を抑える・±35）＋場面成分（居心地±35＋イベントfit±25＋滞在±10＝±70）
   const axes = [A, B, C];
   const dwells = Object.values(state.dwell).slice().sort((a, b) => a - b);
   const median = dwells.length ? (dwells[Math.floor((dwells.length - 1) / 2)] + dwells[Math.ceil((dwells.length - 1) / 2)]) / 2 : 0;
-  const out = {};
+  const parts = {};
   Object.values(QUADRAS).forEach((q) => {
-    let s = 0;
-    q.signs.forEach((sg, i) => { s += sg * axes[i]; });
-    s += state.fit[q.key] || 0;
+    let axisRaw = 0;
+    q.signs.forEach((sg, i) => { axisRaw += sg * axes[i]; });
+    const axisComp = axisRaw / 300 * 35;
+    const cv = state.comfort[q.key];
+    const comfortComp = typeof cv === "number" ? (cv === 2 ? 35 : cv === 0.5 ? 12 : -35) : 0;
+    const eventComp = Math.max(-25, Math.min(25, (state.fit[q.key] || 0) * 2.5));
     const d = state.dwell[q.key];
-    if (typeof d === "number" && dwells.length) s += d > median ? 3 : (d < median ? -3 : 0);
-    out[q.key] = s;
+    let dwellComp = 0;
+    if (typeof d === "number" && dwells.length) {
+      dwellComp = d > median ? Math.min(10, (d - median) / 5) : (d < median ? -Math.min(10, (median - d) / 5) : 0);
+    }
+    const sceneComp = comfortComp + eventComp + dwellComp;
+    parts[q.key] = { total: Math.round(axisComp + sceneComp), scene: sceneComp, axis: axisComp };
   });
-  return out;
-}
-function rankBarHTML(rank, q, aff, min, max) {
+  return parts;
+}function rankBarHTML(rank, q, aff, min, max) {
   const pct = max > min ? Math.round(((aff - min) / (max - min)) * 88) + 8 : 50;
   return '<div class="rank-row"><span class="rank-num">' + rank + '位</span>' +
     '<span class="rank-name">' + q.symbol + " " + q.name + "「" + q.scene + "」</span>" +
     '<div class="bar-track"><div class="bar-fill" style="left:0;width:' + pct + '%"></div></div>' +
     '<span class="rank-score">' + aff + "</span></div>";
 }
+function saveResultImage(result, anti, ranking, aff) {
+  const cv = document.createElement("canvas");
+  cv.width = 840; cv.height = 1080;
+  const g = cv.getContext("2d");
+  g.fillStyle = "#f7f2e6"; g.fillRect(0, 0, 840, 1080);
+  g.strokeStyle = "#3f6033"; g.lineWidth = 6; g.strokeRect(24, 24, 792, 1032);
+  g.strokeStyle = "#b9c4a4"; g.lineWidth = 2; g.strokeRect(40, 40, 760, 1000);
+  g.fillStyle = "#2b2622"; g.textAlign = "center";
+  g.font = "26px sans-serif"; g.fillText("quadra-check｜あなたに合うクアドラはどれ？", 420, 92);
+  g.font = "130px serif"; g.fillStyle = "#3f6033"; g.fillText(result.symbol, 420, 250);
+  g.fillStyle = "#2b2622";
+  g.font = "bold 46px sans-serif"; g.fillText(result.name + " ― " + result.theme, 420, 322);
+  g.font = "30px sans-serif"; g.fillText("「" + result.scene + "」", 420, 368);
+  if (state.name) { g.font = "26px sans-serif"; g.fillText(state.name + " さんの結果", 420, 420); }
+  g.textAlign = "left";
+  g.font = "28px sans-serif";
+  g.fillText("アンチクアドラ：" + anti.symbol + " " + anti.name + "「" + anti.scene + "」", 90, 510);
+  g.font = "bold 28px sans-serif"; g.fillText("合うクアドラランキング", 90, 585);
+  g.font = "28px sans-serif";
+  ranking.slice(0, 3).forEach((q, i) => {
+    g.fillText((i + 1) + "位　" + q.symbol + " " + q.name + "「" + q.scene + "」（" + aff[q.key] + "）", 90, 640 + i * 54);
+  });
+  g.font = "23px sans-serif"; g.fillStyle = "#6d5f4d";
+  g.fillText("結果は所属を決めるものじゃない。どの場の空気が楽か、という傾向。", 90, 950);
+  g.fillText("quadra-check ― もふみつ工房", 90, 1005);
+  cv.toBlob((blob) => {
+    if (!blob) return;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quadra-check-result.png";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  });
+}
 function renderResult() {
   stopAllTimers();
   const A = clamp(state.scores.A), B = clamp(state.scores.B), C = clamp(state.scores.C);
-  const aff = affinityScores(A, B, C);
+  const parts = affinityScores(A, B, C);
+  const aff = {};
+  Object.keys(parts).forEach((k) => { aff[k] = parts[k].total; });
   const ranking = Object.values(QUADRAS).slice().sort((x, y) => aff[y.key] - aff[x.key]);
   const result = ranking[0];
-  const anti = ranking[ranking.length - 1];
+  // アンチは「場面での実体験」を強く反映：場面成分＋軸成分の半分。「早く離れたい」を選んだ場はさらに沈める
+  let anti = null, antiScore = Infinity;
+  Object.values(QUADRAS).forEach((q) => {
+    if (q.key === result.key) return;
+    let s = parts[q.key].scene + parts[q.key].axis * 0.5;
+    if (state.comfort[q.key] === -1.5) s -= 15;
+    if (s < antiScore) { antiScore = s; anti = q; }
+  });
   const affVals = ranking.map((q) => aff[q.key]);
   const affMin = Math.min.apply(null, affVals), affMax = Math.max.apply(null, affVals);
   const who = state.name ? esc(state.name) + "さん" : "あなた";
@@ -801,9 +1021,10 @@ function renderResult() {
   const longest = dwellSorted.length ? QUADRAS[dwellSorted[0]] : null;
   const shortest = dwellSorted.length ? QUADRAS[dwellSorted[dwellSorted.length - 1]] : null;
   const closing = (DARLING_CLOSING[result.key] || "").replace("{anti}", anti.symbol + " " + anti.name);
-  app.innerHTML = '<div class="card"><div class="result-symbol">' + result.symbol + "</div>" +
+  app.innerHTML = '<div class="card result-card"><div class="result-deco l">' + dokuPlant() + '</div><div class="result-deco r">' + dokuPlant() + "</div>" +
+    '<div class="result-symbol">' + result.symbol + "</div>" +
     "<h2 class='center'>" + who + "に合うクアドラは</h2>" +
-    "<h1 class='center'>" + result.symbol + " " + result.name + " ― " + result.theme + "「" + result.scene + "」</h1>" +
+    "<h1 class='center result-title'>" + result.symbol + " " + result.name + " ― " + result.theme + "「" + result.scene + "」</h1>" +
     "<p>" + result.desc + "</p>" +
     '<p class="small">このクアドラのタイプ候補：' + result.types + "</p>" +
     '<p class="small">この結果は、あなたが「所属するクアドラ」を決めるものじゃない。8つの場の中で、どの空気が楽に感じられたかという傾向にすぎない。別のクアドラの人と一緒にいて楽しい、なんてことは普通にあるし、クアドラが違うからこそ見える景色もある。</p>' +
@@ -813,7 +1034,7 @@ function renderResult() {
     "<h2>あなたに合うクアドラランキング</h2>" +
     ranking.map((q, i) => rankBarHTML(i + 1, q, aff[q.key], affMin, affMax)).join("") +
     "<h2>アンチクアドラ</h2>" +
-    "<p><strong>" + anti.symbol + " " + anti.name + " ― " + anti.theme + "「" + anti.scene + "」</strong>：今回の旅で、最も相性スコアが低かった場。アンチは「自動で反対になると決めたもの」ではなく、旅での反応・滞在のしかたから測った最下位。あの場の価値観が、あなたには一番遠かったということ。</p>" +
+    "<p><strong>" + anti.symbol + " " + anti.name + " ― " + anti.theme + "「" + anti.scene + "」</strong>：今回の旅で、最も遠かった場。アンチは符号の反転で自動的に決めたものじゃない。場面での居心地・イベントへの反応・滞在のしかた——旅での実体験から測った最下位で、特に「早く離れたい」と感じた場は強く沈むようにしてある。あの場の価値観が、あなたには一番遠かったということ。</p>" +
     (longest ? '<p class="small">旅の記録：一番長く留まった場は ' + longest.symbol + "「" + longest.scene + "」（" + state.dwell[longest.key] + "秒）、一番早く離れた場は " + shortest.symbol + "「" + shortest.scene + "」（" + state.dwell[shortest.key] + "秒）。</p>" : "") +
     '<div class="darling-block"><h2>ダーリンちゃんから</h2>' +
     '<div class="character"><span class="char-face-static">🥺</span><div class="char-name">ダーリンちゃん</div></div>' +
@@ -822,12 +1043,26 @@ function renderResult() {
     '<input type="text" id="darling-answer" placeholder="自由に書いてね">' +
     '<p class="center"><button id="darling-send">答える</button></p>' +
     '<div id="darling-reply"></div></div>' +
+    '<div class="share-row"><button id="btn-share">結果を共有</button><button class="ghost" id="btn-save-img">結果を画像で保存</button></div>' +
+    '<p class="small center" id="share-msg"></p>' +
     '<p class="center"><button class="ghost" id="btn-again">もう一度旅する</button></p></div>';
   document.getElementById("btn-again").onclick = () => {
     state.scores = { A: 0, B: 0, C: 0 }; state.comfort = {}; state.dwell = {}; state.fit = {}; state.history = [];
     state.sceneIdx = 0; state.taskIdx = 0;
     renderTop();
   };
+  document.getElementById("btn-share").onclick = async () => {
+    const text = who + "に合うクアドラは " + result.symbol + " " + result.name + "「" + result.scene + "」でした（アンチ：" + anti.symbol + " " + anti.name + "）";
+    const url = location.href;
+    const msg = document.getElementById("share-msg");
+    if (navigator.share) {
+      try { await navigator.share({ title: "quadra-check", text: text, url: url }); } catch (e) { /* キャンセル時は何もしない */ }
+    } else {
+      try { await navigator.clipboard.writeText(text + " " + url); if (msg) msg.textContent = "結果テキストとURLをコピーしたよ"; }
+      catch (e) { if (msg) msg.textContent = text + " " + url; }
+    }
+  };
+  document.getElementById("btn-save-img").onclick = () => saveResultImage(result, anti, ranking, aff);
   document.getElementById("darling-send").onclick = () => {
     const text = document.getElementById("darling-answer").value;
     const box = document.getElementById("darling-reply");
@@ -846,4 +1081,5 @@ function renderResult() {
     }
   };
 }
+
 renderTop();
