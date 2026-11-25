@@ -103,3 +103,52 @@ input[type="range"] { width: 100%; margin: 18px 0; }
   to { transform: scale(1); opacity: 1; }
 }
 .lse-voice { font-size: .88em; color: #6d5f4d; font-style: italic; min-height: 1.6em; margin-top: 6px; }
+/* ---- v3: 戻るボタン ---- */
+.back-btn { padding: 5px 14px; font-size: .88em; margin-bottom: 6px; }
+/* ---- v3: A3ランプ ---- */
+.lamp-room {
+  position: relative; border-radius: 12px; overflow: hidden;
+  background: #7d7466; margin: 14px 0 4px; transition: background .25s ease;
+}
+.lamp-svg { display: block; width: 100%; max-width: 340px; margin: 0 auto; position: relative; }
+.lamp-glow {
+  position: absolute; top: 6px; left: 50%; width: 190px; height: 190px;
+  border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 224, 140, .95) 0%, rgba(255, 210, 110, .45) 42%, rgba(255, 210, 110, 0) 70%);
+  transform: translate(-50%, 0) scale(1);
+  animation: lamp-flicker 2.6s ease-in-out infinite;
+}
+@keyframes lamp-flicker {
+  0%, 100% { filter: brightness(1); }
+  42% { filter: brightness(1.07); }
+  55% { filter: brightness(.93); }
+  68% { filter: brightness(1.04); }
+}
+/* ---- v3: B2チップ ---- */
+.chip-pool { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+.chip {
+  background: #fff; color: var(--ink); border: 1px solid var(--line);
+  border-radius: 999px; padding: 7px 14px; font-size: .92em;
+}
+.chip.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+.chip-built {
+  background: #f6f0e4; border-radius: 10px; padding: 12px 16px;
+  min-height: 3em; font-size: .98em;
+}
+button:disabled { opacity: .45; cursor: not-allowed; }
+/* ---- v3: ランキング ---- */
+.rank-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: .9em; }
+.rank-num { width: 2.4em; color: var(--accent); font-weight: bold; }
+.rank-name { width: 11.5em; }
+.rank-score { width: 3em; text-align: right; font-variant-numeric: tabular-nums; color: #55483a; }
+.rank-row .bar-track { flex: 1; }
+/* ---- v3: ダーリンブロック＋Se検出 ---- */
+.darling-block {
+  margin-top: 26px; border: 1px dashed var(--accent); border-radius: 12px;
+  padding: 16px; background: #fdfaf3;
+}
+.char-face-static { font-size: 52px; line-height: 1.1; }
+.se-badge {
+  display: inline-block; background: #8E2B2B; color: #fff; font-weight: bold;
+  border-radius: 999px; padding: 3px 16px; letter-spacing: .12em; font-size: .92em;
+}

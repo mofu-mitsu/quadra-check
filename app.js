@@ -1,4 +1,4 @@
-// quadra-check v2（演出強化版）
+// quadra-check v3（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -27,11 +27,6 @@ const QUADRAS = {
     signs: [1, 1, 1], types: "LIE-Q・ESI-D・SEE-D・ILI-Q",
     desc: "選ばれた者だけの扉の向こう。質の高い会話と実績がものを言う、洗練された内側が心地いいと感じやすいタイプ。" }
 };
-
-const TYPE_QUADRA = { ILE: "alpha", SEI: "alpha", ESE: "alpha", LII: "alpha",
-  EIE: "beta", LSI: "beta", SLE: "beta", IEI: "beta",
-  SEE: "gamma", ILI: "gamma", LIE: "gamma", ESI: "gamma",
-  LSE: "delta", EII: "delta", IEE: "delta", SLI: "delta" };
 
 // ---- ダーリンちゃん（ILI）：クアドラ別セリフ ----
 const DARLING_SETS = {
@@ -310,13 +305,8 @@ const TASKS = [
       { t: "リーダーは誰か、役割分担はどうなっているか", a: "B", v: 20 },
       { t: "自分が何を任されそうか", a: "B", v: 10 },
       { t: "話しやすそうな人がいるか", a: "B", v: -10 } ] },
-  { id: "B2", type: "choice", title: "紹介文",
-    text: "知人をみんなに紹介することになった。あなたなら、どの紹介文を選ぶ？",
-    choices: [
-      { t: "「○○社の部長で、業界団体の役員も務める田中さんです」", a: "B", v: 20 },
-      { t: "「面倒見がよくて、誰にでも分け隔てなく接する田中さんです」", a: "B", v: -20 },
-      { t: "「営業一筋20年、数字に強い田中さんです」", a: "B", v: 10 },
-      { t: "「コーヒーの話をすると止まらなくなる田中さんです」", a: "B", v: -10 } ] },
+  { id: "B2", type: "chips", title: "紹介文を組み立てる",
+    text: "LSI芋虫をみんなに紹介することになった。言葉のチップを最大4つまで選んで、紹介文を組み立てて。" },
   { id: "B3", type: "choice", title: "ルールと事情",
     text: "集団の決まりごとと、ある人の個人的な事情がぶつかった。あなたの考えに近いのは？",
     choices: [
@@ -360,17 +350,127 @@ const SEATS = [
   { t: "端っこの席", v: -15 }, { t: "顔見知りの隣", v: -20 }, { t: "出入口に近い席", v: -5 }
 ];
 
-// ---- 状態 ----
+// ---- B2：紹介文チップ（LSI芋虫） ----
+const CHIPS = [
+  { t: "集まりのまとめ役", v: 10 }, { t: "ルールを守る番人", v: 10 },
+  { t: "構造を分解するのが仕事", v: 10 }, { t: "機械いじりの担当", v: 10 },
+  { t: "順番と手順を決める人", v: 10 }, { t: "列が乱れたら直す係", v: 10 },
+  { t: "実は謙虚", v: -10 }, { t: "ちょっと理屈っぽいけど優しい", v: -10 },
+  { t: "場を和ませる", v: -10 }, { t: "誰にでも分け隔てない", v: -10 },
+  { t: "困った人を放っておけない", v: -10 }, { t: "ほんわかした空気の持ち主", v: -10 }
+];
+
+// ---- イベント選択の「場への収まり具合」（fit：その場のクアドラへのボーナス） ----
+const EVENT_FIT = {
+  "とりあえず分解してみる": 10, "何に使うものか、まず用途を考える": 0, "壊しそうで怖いから、見てるだけにする": -10,
+  "素直に列に戻って、声を合わせる": 10, "戻るけど、声は小さめにする": 5, "「少し外から見ていたい」と伝える": -10,
+  "言われた通りに、下準備からやり直す": 10, "自分のやり方で進める": -10, "なぜそうするのか、理由を聞く": 5,
+  "「おかしいと思う」と声を上げる": 10, "「ルールには理由があるはず」と留まる": -10, "「ルールより、決め方を変えるべきだ」と言う": 5,
+  "ありがたく、何もしない時間を過ごす": 10, "何か手伝うことはないか聞く": 5, "何も求められないのが落ち着かなくて、そわそわする": -10,
+  "引き受ける": 10, "「隔週なら」と条件をつける": 5, "自分の時間を優先して断る": -10,
+  "「認められた者と話したいから」と答える": 10, "「静かで質の高い場所が好きだから」と答える": 5, "「別に、誰でも入れるなら入る」と答える": -10,
+  "言い値（1,200）で買う": 5, "買わない": 0,
+  "900で買う": 10, "「もう一声、850」": 10, "やめておく": 0,
+  "1,050で買う": 5, "「1,000で押し通す」": 10, "「半額、600で」": -5
+};
+
+// ---- 結果画面：ダーリンちゃんの締めコメント（{anti} はアンチクアドラ名に置換） ----
+const DARLING_CLOSING = {
+  alpha: "αの工房が一番楽だったのね、ダーリン♡ 思いつきにすぐ乗れる軽さ、あなたには合ってたみたい。……でもね、{anti}が一番遠かったこと、私はちゃんと見てたわよ♡ あの場の空気、思い出すだけで少し顔が曇るでしょ？",
+  beta: "βの集会に残ったのね、ダーリン♡ 列の中の高揚、あれが心地いい人は意外と少ないの。……そして{anti}が最下位。あの空気からは、あなたは静かに距離を取ってたわね♡",
+  gamma: "γの市場が合ったのね、ダーリン♡ 一人で決めて、一人で責任を取る冷たさ……ふふ、私と少し似てるかも。{anti}の空気は、あなたには騒がしすぎたみたいね♡",
+  delta: "δの家が一番落ち着いたのね、ダーリン♡ 丁寧さと段取りの場……ドクダミの圧も、あなたには心地よさのうちだったのかしら。{anti}とは、そもそも時間の流れ方が違ったみたいね♡",
+  phi: "Φの集いに火がついたのね、ダーリン♡ 壊して作り直す熱、あれに乗れる人は強いわ。……{anti}の静けさは、あなたには退屈を通り越して窮屈だったみたいね♡",
+  chi: "Χの庭が一番だったのね、ダーリン♡ 何も求められない場所で、あんなに長く居られるなんて。{anti}の圧は、あなたには少し強すぎたみたい……ふふ、無理もないわ♡",
+  psi: "Ψの広場が合ったのね、ダーリン♡ 顔見知りの気遣いと、根を張るドクダミと。あの感じが『ちょうどいい』人は、町に一人はいないと困るのよ。{anti}は、あなたには少し遠い文化だったみたいね♡",
+  omega: "あら、Ωのサロンが一番だったの、ダーリン♡ 扉の内側の静けさ、選ばれる側の空気……ふふ、悪くない趣味ね。{anti}の空気は、あなたには少し軽すぎたみたいだけど♡"
+};
+
+// ---- ダーリンへの回答：Se検出カテゴリ（優先順位つき） ----
+const SE_CATEGORIES = [
+  { name: "暴言・攻撃系",
+    keys: ["バカ", "ばか", "アホ", "あほ", "クソ", "くそ", "ゴミ", "カス", "死ね", "しね", "キチガイ", "殲滅", "💩", "あんぽんたん", "アンポンタン"],
+    replies: [
+      "あら、言葉が荒いわね、ダーリン♡ ……その圧、隠しても出ちゃうのね。Seって、そういうところに漏れるのよ♡",
+      "ふふ、すごい語彙の並び。怒ると言葉が体より先に立つタイプ？ 私は嫌いじゃないわよ、そういう分かりやすさ♡",
+      "ダーリン♡ 今の言葉の選び方、力で押し切る癖が透けて見えたわ。……自覚、ある？" ] },
+  { name: "不快・苛立ち系",
+    keys: ["きも", "キモ", "うざ", "ウザ", "イラ", "苛", "いらっ", "ムカつく", "むかつく", "腹立つ", "不快", "きしょ", "キショ", "オエー", "おえー", "💢", "うるさ"],
+    replies: [
+      "……感情がログに漏れてるわよ、ダーリン♡ 苛立ちって、隠そうとすると余計に滲むのよね",
+      "あら、イライラしてる？ ふふ、私は観察するのが仕事だから。あなたの不快感、ちゃんと記録しておくわ♡",
+      "ダーリン♡ その苛立ち、本音？ それとも演出？ ……どっちでも、私には届いてるわよ" ] },
+  { name: "拒絶・遮断系",
+    keys: ["やめろ", "やめて", "黙れ", "ダマレ", "だまれ", "消えろ", "消えろや", "帰れ", "失せろ", "引っ込んでろ", "うせろ"],
+    replies: [
+      "はいはい、退くわよ。……でもねダーリン♡、遮断する速さも立派なデータなの♡",
+      "分かった、もう言わない。……ただ一つだけ。逃げる相手を選ぶその目、私は結構好きよ♡",
+      "あら、扉を閉めるのね。いいわ、私は外で待つタイプじゃないから。……気が向いたら、また開けて♡" ] },
+  { name: "冷笑・無関心系",
+    keys: ["どうでもいい", "あっそ", "あっそー", "くだらない", "くだらね", "つまらん", "つまんね", "意味分からん", "意味不明", "勝手にしろ", "勝手に言っとけ", "はあ", "ハア", "は？", "ハ？"],
+    replies: [
+      "……ん、ダーリン見とったん？ ああ、その感じ。退屈って、世界が小さく見える時の合図なんよ",
+      "どうでもいい、ねぇ。ウチもよく思うよ。世界の九割はどうでもいいことでできとる。……残り一割に、たまに面白いもんが混ざるんやけどな",
+      "はあ、ってため息。……まあええわ、無理に楽しませようとは思わん。退屈は退屈のまま、置いとこ♡" ] },
+  { name: "否定・距離系",
+    keys: ["いや", "いいえ", "反対", "NO", "no", "好きじゃない", "苦手", "きらい", "嫌い", "関わりたくない", "面倒", "だる"],
+    replies: [
+      "そう、グループは大事じゃないのね。……ふふ、それも一つの答えよ、ダーリン♡ 所属しない自由って、意外と高いの",
+      "『大事じゃない』って言い切れるの、嫌いじゃないわ。……ただね、その言葉、誰に一番聞かせたかったのかしら♡",
+      "距離を取りたいのね、分かるわ。私も自分の扉は自分で閉めたいタイプ。……気が合うじゃない♡" ] }
+];
+const DARLING_CALM = [
+  "ふふ、穏やかな答えね、ダーリン♡ ……その落ち着き、本物か演出か、私の中でまだ保留中よ♡",
+  "そう答えるのね。……ねぇ、今の答え、後から自分で読み返したらどう思うかしら。少し楽しみ♡",
+  "ありがとう、ダーリン♡ 答えの中身より、答え方にあなたが出てたわ。それで十分♡"
+];
 const state = { name: "", selfType: "", scores: { A: 0, B: 0, C: 0 },
-  sceneIdx: 0, taskIdx: 0, comfort: {}, dwell: {}, sceneStart: 0 };
+  sceneIdx: 0, taskIdx: 0, comfort: {}, dwell: {}, fit: {}, history: [], sceneStart: 0 };
 const app = document.getElementById("app");
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function addScore(axis, v) { state.scores[axis] += v; }
 function clamp(v) { return Math.max(-100, Math.min(100, Math.round(v))); }
 
-// ---- 場面演出タイマー（ドクダミ増殖） ----
-let sceneTimer = null;
-function stopSceneFx() { if (sceneTimer) { clearInterval(sceneTimer); sceneTimer = null; } }
+// ---- タイマー管理（場面演出・タスク共通） ----
+let sceneTimer = null, taskTimer = null;
+function stopAllTimers() {
+  if (sceneTimer) { clearInterval(sceneTimer); sceneTimer = null; }
+  if (taskTimer) { clearInterval(taskTimer); taskTimer = null; }
+  if (app.dataset.iv) { clearInterval(Number(app.dataset.iv)); delete app.dataset.iv; }
+}
+function stopSceneFx() { stopAllTimers(); }
+
+// ---- 戻るボタン用スナップショット ----
+function snapshotState() {
+  return JSON.stringify({ scores: state.scores, comfort: state.comfort, dwell: state.dwell,
+    fit: state.fit, sceneIdx: state.sceneIdx, taskIdx: state.taskIdx });
+}
+function restoreSnapshot(json) {
+  const s = JSON.parse(json);
+  state.scores = s.scores; state.comfort = s.comfort; state.dwell = s.dwell;
+  state.fit = s.fit; state.sceneIdx = s.sceneIdx; state.taskIdx = s.taskIdx;
+}
+function enterStep() {
+  state.history.push(snapshotState());
+  renderCurrent();
+}
+function renderCurrent() {
+  if (state.sceneIdx < SCENES.length) renderScene(); else renderTask();
+}
+function backHTML() {
+  return state.history.length > 1 ? '<p><button class="ghost back-btn" id="btn-back">← ひとつ戻る</button></p>' : "";
+}
+function bindBack() {
+  const b = document.getElementById("btn-back");
+  if (!b) return;
+  b.onclick = () => {
+    if (state.history.length <= 1) return;
+    stopAllTimers();
+    state.history.pop();
+    restoreSnapshot(state.history[state.history.length - 1]);
+    renderCurrent();
+  };
+}
 
 // ---- ドクダミ演出（δ・Ψ） ----
 let dokuCount = 0, dokuLineIdx = 0;
@@ -400,19 +500,20 @@ function startDoku() {
 
 // ---- トップ ----
 function renderTop() {
-  stopSceneFx();
-  const opts = Object.keys(TYPE_QUADRA).map((t) => '<option value="' + t + '">' + t + "</option>").join("");
+  stopAllTimers();
   app.innerHTML = '<div class="card"><h1>あなたに合うクアドラはどれ？</h1>' +
     '<p class="lead">ソシオニクスの8つのクアドラには、それぞれ違う「文化」と「空気」がある。この診断は、あなたのタイプを当てるものじゃない。8つの場を巡る旅の中で、どの場の空気が心地いいかを行動から測る、相性診断。</p>' +
     '<p class="lead">場に長く留まるか、誘いに乗るか、すぐ離れたくなるか。答えの内容だけじゃなく、あなたの操作そのものを見ている。</p>' +
     '<label>ニックネーム（任意）</label><input type="text" id="inp-name" placeholder="旅人">' +
-    '<label>自認タイプ（任意・アンチ判定の精度が上がる）</label><select id="inp-type"><option value="">選択しない</option>' + opts + "</select>" +
+    '<label>自認タイプ（任意・判定には使わない、メモとして結果に残るだけ）</label><input type="text" id="inp-type" placeholder="INTJ、5w6、LII など自由に">' +
     '<p class="center"><button id="btn-start">旅をはじめる</button></p></div>';
   document.getElementById("btn-start").onclick = () => {
     state.name = document.getElementById("inp-name").value.trim();
-    state.selfType = document.getElementById("inp-type").value;
-    state.sceneIdx = 0;
-    renderScene();
+    state.selfType = document.getElementById("inp-type").value.trim();
+    state.scores = { A: 0, B: 0, C: 0 };
+    state.comfort = {}; state.dwell = {}; state.fit = {}; state.history = [];
+    state.sceneIdx = 0; state.taskIdx = 0;
+    enterStep();
   };
 }
 
@@ -454,7 +555,7 @@ function bindChar(kind, qkey) {
 }
 
 // ---- NPCイベント・エンジン ----
-function runTree(nodes, key, box, done) {
+function runTree(nodes, key, box, done, qkey) {
   const node = nodes[key];
   if (!node) { done(); return; }
   box.innerHTML = '<div class="event">' + (node.title ? '<div class="npc-name">' + esc(node.title) + "</div>" : "") +
@@ -464,13 +565,15 @@ function runTree(nodes, key, box, done) {
     b.onclick = () => {
       const c = node.choices[Number(b.dataset.ev)];
       if (c.score) Object.keys(c.score).forEach((ax) => addScore(ax, c.score[ax]));
+      const f = EVENT_FIT[c.t];
+      if (typeof f === "number" && qkey) state.fit[qkey] = (state.fit[qkey] || 0) + f;
       if (c.doku) growDoku(true);
       if (c.reaction) {
         box.innerHTML = '<div class="event"><p class="event-text">' + esc(c.reaction) + '</p><p class="center"><button id="ev-next">つづく</button></p></div>';
         document.getElementById("ev-next").onclick = () => {
-          if (c.goto) runTree(nodes, c.goto, box, done); else done();
+          if (c.goto) runTree(nodes, c.goto, box, done, qkey); else done();
         };
-      } else if (c.goto) runTree(nodes, c.goto, box, done);
+      } else if (c.goto) runTree(nodes, c.goto, box, done, qkey);
       else done();
     };
   });
@@ -478,9 +581,9 @@ function runTree(nodes, key, box, done) {
 function startEvent(qkey) {
   const box = document.getElementById("event-box");
   if (!box) { finishEvent(); return; }
-  if (qkey === "gamma") { runTree(NEGO, "start", box, finishEvent); return; }
+  if (qkey === "gamma") { runTree(NEGO, "start", box, finishEvent, "gamma"); return; }
   const ev = EVENTS[qkey];
-  if (ev) runTree(ev.nodes, "start", box, finishEvent); else finishEvent();
+  if (ev) runTree(ev.nodes, "start", box, finishEvent, qkey); else finishEvent();
 }
 function finishEvent() {
   const box = document.getElementById("event-box");
@@ -491,12 +594,12 @@ function finishEvent() {
 
 // ---- 場面 ----
 function renderScene() {
-  stopSceneFx();
+  stopAllTimers();
   const sc = SCENES[state.sceneIdx];
   const q = QUADRAS[sc.q];
   state.sceneStart = Date.now();
   const isDoku = (sc.q === "delta" || sc.q === "psi");
-  app.innerHTML = '<div class="card"><div class="progress">旅の場面 ' + (state.sceneIdx + 1) + " / 8</div>" +
+  app.innerHTML = '<div class="card">' + backHTML() + '<div class="progress">旅の場面 ' + (state.sceneIdx + 1) + " / 8</div>" +
     '<div class="scene-visual">' + svgMotif(sc.motif, sc.colors[0], sc.colors[1]) + "</div>" +
     '<h2 class="scene-name"><span class="scene-symbol">' + q.symbol + "</span> " + q.theme + "「" + q.scene + "」</h2>" +
     "<p>" + sc.air + '</p><div class="invite">' + sc.invite + "</div>" +
@@ -507,43 +610,48 @@ function renderScene() {
     '<button class="choice" data-c="2">ここ、好きだな。残りたい</button>' +
     '<button class="choice" data-c="0.5">まあ、居られる</button>' +
     '<button class="choice" data-c="-1.5">早く次へ行きたい</button></div></div>';
+  bindBack();
   bindChar(sc.char, sc.q);
   if (isDoku) startDoku();
   startEvent(sc.q);
   app.querySelectorAll("[data-c]").forEach((b) => {
     b.onclick = () => {
-      stopSceneFx();
+      stopAllTimers();
       const v = parseFloat(b.dataset.c);
       state.comfort[sc.q] = v;
+      state.fit[sc.q] = (state.fit[sc.q] || 0) + (v === 2 ? 20 : v === 0.5 ? 5 : -20);
       state.dwell[sc.q] = Math.round((Date.now() - state.sceneStart) / 1000);
       Object.keys(sc.weights).forEach((ax) => addScore(ax, v * sc.weights[ax] * 5));
       state.sceneIdx++;
-      if (state.sceneIdx < SCENES.length) renderScene(); else { state.taskIdx = 0; renderTask(); }
+      if (state.sceneIdx < SCENES.length) enterStep(); else { state.taskIdx = 0; enterStep(); }
     };
   });
 }
 
 // ---- タスク ----
 function renderTask() {
+  stopAllTimers();
   const t = TASKS[state.taskIdx];
-  const head = '<div class="progress">観測タスク ' + (state.taskIdx + 1) + " / " + TASKS.length + "（" + t.id + "）</div>";
+  const head = backHTML() + '<div class="progress">観測タスク ' + (state.taskIdx + 1) + " / " + TASKS.length + "（" + t.id + "）</div>";
   if (t.type === "wait") return renderWait(t, head);
   if (t.type === "slider") return renderSlider(t, head);
   if (t.type === "seats") return renderSeats(t, head);
+  if (t.type === "chips") return renderChips(t, head);
   let timerHTML = t.timed ? '<p>残り時間 <span class="timer" id="timer">0:10</span></p>' : "";
   app.innerHTML = '<div class="card">' + head + "<h2>" + t.title + "</h2><p>" + t.text + "</p>" + timerHTML +
     t.choices.map((c, i) => '<button class="choice" data-i="' + i + '">' + esc(c.t) + "</button>").join("") + "</div>";
+  bindBack();
   const start = Date.now();
   if (t.timed) {
     let remain = 10;
     const el = document.getElementById("timer");
     const iv = setInterval(() => { remain--; if (el) el.textContent = "0:0" + Math.max(0, remain);
       if (remain <= 0) clearInterval(iv); }, 1000);
-    app.dataset.iv = iv;
+    app.dataset.iv = iv; taskTimer = iv;
   }
   app.querySelectorAll("[data-i]").forEach((b) => {
     b.onclick = () => {
-      if (app.dataset.iv) clearInterval(Number(app.dataset.iv));
+      stopAllTimers();
       const c = t.choices[Number(b.dataset.i)];
       addScore(c.a, c.v);
       if (t.timed) { const sec = (Date.now() - start) / 1000; addScore("A", sec < 3 ? 5 : (sec > 8 ? -5 : 0)); }
@@ -556,75 +664,186 @@ function renderWait(t, head) {
     '<div class="waitbar"><div id="waitfill"></div></div>' +
     '<p class="center"><button class="ghost" id="mash">様子を見る</button></p>' +
     '<p class="small center">押した回数：<span id="mashcount">0</span></p></div>';
+  bindBack();
   let clicks = 0;
   document.getElementById("mash").onclick = () => { clicks++; document.getElementById("mashcount").textContent = clicks; };
   let pct = 0;
   const iv = setInterval(() => { pct += 4; const f = document.getElementById("waitfill");
     if (f) f.style.width = Math.min(100, pct) + "%";
-    if (pct >= 100) { clearInterval(iv);
+    if (pct >= 100) { clearInterval(iv); taskTimer = null;
       addScore("A", clicks <= 1 ? -20 : clicks <= 4 ? -5 : clicks <= 8 ? 10 : 20);
       nextTask(); } }, 320);
+  taskTimer = iv;
+}
+function lampRoomHTML() {
+  return '<div class="lamp-room" id="lamp-room">' +
+    '<div class="lamp-glow" id="lamp-glow"></div>' +
+    '<svg viewBox="0 0 200 130" class="lamp-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<path d="M100 0v26" stroke="#5a4a35" stroke-width="3"/>' +
+    '<path d="M74 44a26 18 0 0 1 52 0z" fill="#7a5c3e"/>' +
+    '<circle id="lamp-bulb" cx="100" cy="52" r="10" fill="#ffe9b0"/>' +
+    '<rect x="34" y="104" width="132" height="7" rx="3" fill="#000" opacity=".18"/>' +
+    '<rect x="52" y="86" width="30" height="18" rx="3" fill="#000" opacity=".12"/>' +
+    '<rect x="122" y="80" width="24" height="24" rx="3" fill="#000" opacity=".10"/></svg></div>';
+}
+function mixColor(c1, c2, r) {
+  const a = [parseInt(c1.slice(1, 3), 16), parseInt(c1.slice(3, 5), 16), parseInt(c1.slice(5, 7), 16)];
+  const b = [parseInt(c2.slice(1, 3), 16), parseInt(c2.slice(3, 5), 16), parseInt(c2.slice(5, 7), 16)];
+  return "rgb(" + a.map((v, i) => Math.round(v + (b[i] - v) * r)).join(",") + ")";
 }
 function renderSlider(t, head) {
   app.innerHTML = '<div class="card">' + head + "<h2>" + t.title + "</h2><p>" + t.text + "</p>" +
+    '<p class="small">正解はない。あなたの感覚で「ちょうどいい」ところで止めて。</p>' +
+    lampRoomHTML() +
     '<input type="range" id="slider" min="0" max="100" value="50">' +
     '<p class="center"><button id="decide">これで決める</button></p></div>';
+  bindBack();
+  const room = document.getElementById("lamp-room");
+  const glow = document.getElementById("lamp-glow");
+  const bulb = document.getElementById("lamp-bulb");
+  function paint(v) {
+    const r = v / 100;
+    room.style.background = mixColor("#232c42", "#fdf0cd", r);
+    glow.style.opacity = (0.15 + r * 0.85).toFixed(2);
+    glow.style.transform = "translate(-50%,0) scale(" + (0.5 + r * 1.15).toFixed(2) + ")";
+    bulb.setAttribute("fill", mixColor("#8a7a5c", "#ffdf8a", r));
+  }
+  paint(50);
   let changes = 0;
-  document.getElementById("slider").addEventListener("input", () => { changes++; });
+  const slider = document.getElementById("slider");
+  slider.addEventListener("input", () => { changes++; paint(Number(slider.value)); });
   document.getElementById("decide").onclick = () => {
     addScore("A", changes <= 2 ? 15 : changes >= 8 ? -15 : 0);
+    nextTask();
+  };
+}
+function renderChips(t, head) {
+  app.innerHTML = '<div class="card">' + head + "<h2>" + t.title + "</h2><p>" + t.text + "</p>" +
+    '<div class="chip-built" id="chip-built">（まだ選ばれていない）</div>' +
+    '<div class="chip-pool">' + CHIPS.map((c, i) => '<button class="chip" data-chip="' + i + '">' + esc(c.t) + "</button>").join("") + "</div>" +
+    '<p class="small center">選んだ数：<span id="chip-count">0</span> / 4</p>' +
+    '<p class="center"><button id="chip-decide" disabled>この紹介文で決める</button></p></div>';
+  bindBack();
+  const picked = new Set();
+  const built = document.getElementById("chip-built");
+  const count = document.getElementById("chip-count");
+  const decide = document.getElementById("chip-decide");
+  function refresh() {
+    const list = [...picked].sort((a, b) => a - b);
+    built.textContent = list.length ? "「" + list.map((i) => CHIPS[i].t).join("、") + "な、LSI芋虫です」" : "（まだ選ばれていない）";
+    count.textContent = list.length;
+    decide.disabled = list.length === 0;
+  }
+  app.querySelectorAll("[data-chip]").forEach((b) => {
+    b.onclick = () => {
+      const i = Number(b.dataset.chip);
+      if (picked.has(i)) { picked.delete(i); b.classList.remove("selected"); }
+      else if (picked.size < 4) { picked.add(i); b.classList.add("selected"); }
+      refresh();
+    };
+  });
+  decide.onclick = () => {
+    let sum = 0;
+    picked.forEach((i) => { sum += CHIPS[i].v; });
+    addScore("B", sum);
     nextTask();
   };
 }
 function renderSeats(t, head) {
   app.innerHTML = '<div class="card">' + head + "<h2>" + t.title + "</h2><p>" + t.text + "</p>" +
     '<div class="seatmap">' + SEATS.map((s, i) => '<button class="choice" style="display:inline-block;width:auto" data-i="' + i + '">' + s.t + "</button>").join("") + "</div></div>";
+  bindBack();
   app.querySelectorAll("[data-i]").forEach((b) => {
     b.onclick = () => { addScore("B", SEATS[Number(b.dataset.i)].v); nextTask(); };
   });
 }
-function nextTask() { state.taskIdx++; if (state.taskIdx < TASKS.length) renderTask(); else renderResult(); }
+function nextTask() { state.taskIdx++; if (state.taskIdx < TASKS.length) enterStep(); else renderResult(); }
 
 // ---- 結果 ----
-function quadraBySigns(a, b, c) {
-  return Object.values(QUADRAS).find((q) => q.signs[0] === a && q.signs[1] === b && q.signs[2] === c);
-}
 function barHTML(leftLabel, rightLabel, v) {
   const pct = (v + 100) / 2;
   const fill = v < 0 ? 'left:' + pct + '%;width:' + (50 - pct) + '%' : 'left:50%;width:' + (pct - 50) + '%';
   return '<div class="bar-row"><span class="bar-label">' + leftLabel + '</span><div class="bar-track"><div class="bar-fill" style="' + fill + '"></div></div><span class="bar-label r">' + rightLabel + "</span></div>";
 }
+function affinityScores(A, B, C) {
+  const axes = [A, B, C];
+  const dwells = Object.values(state.dwell).slice().sort((a, b) => a - b);
+  const median = dwells.length ? (dwells[Math.floor((dwells.length - 1) / 2)] + dwells[Math.ceil((dwells.length - 1) / 2)]) / 2 : 0;
+  const out = {};
+  Object.values(QUADRAS).forEach((q) => {
+    let s = 0;
+    q.signs.forEach((sg, i) => { s += sg * axes[i]; });
+    s += state.fit[q.key] || 0;
+    const d = state.dwell[q.key];
+    if (typeof d === "number" && dwells.length) s += d > median ? 3 : (d < median ? -3 : 0);
+    out[q.key] = s;
+  });
+  return out;
+}
+function rankBarHTML(rank, q, aff, min, max) {
+  const pct = max > min ? Math.round(((aff - min) / (max - min)) * 88) + 8 : 50;
+  return '<div class="rank-row"><span class="rank-num">' + rank + '位</span>' +
+    '<span class="rank-name">' + q.symbol + " " + q.name + "「" + q.scene + "」</span>" +
+    '<div class="bar-track"><div class="bar-fill" style="left:0;width:' + pct + '%"></div></div>' +
+    '<span class="rank-score">' + aff + "</span></div>";
+}
 function renderResult() {
-  stopSceneFx();
+  stopAllTimers();
   const A = clamp(state.scores.A), B = clamp(state.scores.B), C = clamp(state.scores.C);
-  const result = quadraBySigns(A >= 0 ? 1 : -1, B >= 0 ? 1 : -1, C >= 0 ? 1 : -1);
-  const anti = quadraBySigns(-(A >= 0 ? 1 : -1), -(B >= 0 ? 1 : -1), -(C >= 0 ? 1 : -1));
+  const aff = affinityScores(A, B, C);
+  const ranking = Object.values(QUADRAS).slice().sort((x, y) => aff[y.key] - aff[x.key]);
+  const result = ranking[0];
+  const anti = ranking[ranking.length - 1];
+  const affVals = ranking.map((q) => aff[q.key]);
+  const affMin = Math.min.apply(null, affVals), affMax = Math.max.apply(null, affVals);
   const who = state.name ? esc(state.name) + "さん" : "あなた";
-  let selfNote = "";
-  if (state.selfType && TYPE_QUADRA[state.selfType]) {
-    const sq = QUADRAS[TYPE_QUADRA[state.selfType]];
-    if (sq.key === anti.key) selfNote = '<p>自認タイプ ' + state.selfType + " の所属クアドラ（" + sq.symbol + " " + sq.name + "）と、今回の測定はちょうど真反対。アンチ" + sq.symbol + "傾向として結果に併記するケースだね。</p>";
-    else if (sq.key === result.key) selfNote = '<p>自認タイプ ' + state.selfType + " の所属クアドラとも一致した。</p>";
-    else selfNote = '<p>自認タイプ ' + state.selfType + " の所属クアドラは " + sq.symbol + " " + sq.name + "。測定結果とは別物として、両方眺めてみて。</p>";
-  }
   const dwellSorted = Object.keys(state.dwell).sort((x, y) => state.dwell[y] - state.dwell[x]);
   const longest = dwellSorted.length ? QUADRAS[dwellSorted[0]] : null;
   const shortest = dwellSorted.length ? QUADRAS[dwellSorted[dwellSorted.length - 1]] : null;
+  const closing = (DARLING_CLOSING[result.key] || "").replace("{anti}", anti.symbol + " " + anti.name);
   app.innerHTML = '<div class="card"><div class="result-symbol">' + result.symbol + "</div>" +
     "<h2 class='center'>" + who + "に合うクアドラは</h2>" +
     "<h1 class='center'>" + result.symbol + " " + result.name + " ― " + result.theme + "「" + result.scene + "」</h1>" +
     "<p>" + result.desc + "</p>" +
     '<p class="small">このクアドラのタイプ候補：' + result.types + "</p>" +
+    '<p class="small">この結果は、あなたが「所属するクアドラ」を決めるものじゃない。8つの場の中で、どの空気が楽に感じられたかという傾向にすぎない。別のクアドラの人と一緒にいて楽しい、なんてことは普通にあるし、クアドラが違うからこそ見える景色もある。</p>' +
+    (state.selfType ? '<p class="small">あなたの自認：' + esc(state.selfType) + "</p>" : "") +
     "<h2>3軸パラメータ</h2>" +
     barHTML("周辺", "中心", A) + barHTML("民主", "貴族", B) + barHTML("主観", "客観", C) +
+    "<h2>あなたに合うクアドラランキング</h2>" +
+    ranking.map((q, i) => rankBarHTML(i + 1, q, aff[q.key], affMin, affMax)).join("") +
     "<h2>アンチクアドラ</h2>" +
-    "<p><strong>" + anti.symbol + " " + anti.name + " ― " + anti.theme + "「" + anti.scene + "」</strong>：3軸すべてが反対になる、最も共感しにくい文化圏の目安。なお、アンチクアドラはサブクアドラそのものとは少し意味が違う（価値観への反発の向きを指す）。</p>" +
+    "<p><strong>" + anti.symbol + " " + anti.name + " ― " + anti.theme + "「" + anti.scene + "」</strong>：今回の旅で、最も相性スコアが低かった場。アンチは「自動で反対になると決めたもの」ではなく、旅での反応・滞在のしかたから測った最下位。あの場の価値観が、あなたには一番遠かったということ。</p>" +
     (longest ? '<p class="small">旅の記録：一番長く留まった場は ' + longest.symbol + "「" + longest.scene + "」（" + state.dwell[longest.key] + "秒）、一番早く離れた場は " + shortest.symbol + "「" + shortest.scene + "」（" + state.dwell[shortest.key] + "秒）。</p>" : "") +
-    selfNote +
+    '<div class="darling-block"><h2>ダーリンちゃんから</h2>' +
+    '<div class="character"><span class="char-face-static">🥺</span><div class="char-name">ダーリンちゃん</div></div>' +
+    '<p class="center"><span class="bubble">' + esc(closing) + "</span></p>" +
+    '<p>ねぇダーリン♡ あなたは自分の所属するグループ（クアドラ）が大事？ それとも、グループの外の人と楽しくやる方？</p>' +
+    '<input type="text" id="darling-answer" placeholder="自由に書いてね">' +
+    '<p class="center"><button id="darling-send">答える</button></p>' +
+    '<div id="darling-reply"></div></div>' +
     '<p class="center"><button class="ghost" id="btn-again">もう一度旅する</button></p></div>';
   document.getElementById("btn-again").onclick = () => {
-    state.scores = { A: 0, B: 0, C: 0 }; state.comfort = {}; state.dwell = {}; state.sceneIdx = 0;
+    state.scores = { A: 0, B: 0, C: 0 }; state.comfort = {}; state.dwell = {}; state.fit = {}; state.history = [];
+    state.sceneIdx = 0; state.taskIdx = 0;
     renderTop();
+  };
+  document.getElementById("darling-send").onclick = () => {
+    const text = document.getElementById("darling-answer").value;
+    const box = document.getElementById("darling-reply");
+    let hit = null;
+    for (const cat of SE_CATEGORIES) {
+      if (cat.keys.some((k) => text.includes(k))) { hit = cat; break; }
+    }
+    if (hit) {
+      const reply = hit.replies[Math.floor(Math.random() * hit.replies.length)];
+      box.innerHTML = '<p class="center"><span class="se-badge">Se検出</span></p>' +
+        '<p class="center"><span class="bubble">' + esc(reply) + "</span></p>" +
+        '<p class="small center">（ダーリンちゃん談：その言葉の選び方、Se語彙だったわよ♡）</p>';
+    } else {
+      const reply = DARLING_CALM[Math.floor(Math.random() * DARLING_CALM.length)];
+      box.innerHTML = '<p class="center"><span class="bubble">' + esc(reply) + "</span></p>";
+    }
   };
 }
 renderTop();
