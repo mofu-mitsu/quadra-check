@@ -124,7 +124,7 @@ input[type="range"]::-moz-range-track {
 }
 .doku-field { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 2px; min-height: 40px; }
 .doku-plant { display: inline-block; animation: doku-pop .45s ease; }
-.doku-svg { width: 34px; height: 40px; display: block; }
+.doku-svg { width: 30px; height: 39px; display: block; }
 @keyframes doku-pop {
   from { transform: scale(.2); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
@@ -247,7 +247,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .result-deco { position: absolute; top: 8px; opacity: .55; pointer-events: none; }
 .result-deco.l { left: 6px; transform: rotate(-8deg); }
 .result-deco.r { right: 6px; transform: rotate(8deg) scaleX(-1); }
-.result-deco .doku-svg { width: 46px; height: 56px; }
+.result-deco .doku-svg { width: 44px; height: 57px; }
 .result-card .result-symbol { color: var(--green); text-shadow: 0 2px 0 #e3ecd4; }
 .result-title { color: var(--green); letter-spacing: .03em; }
 .result-card h2 {
@@ -328,3 +328,48 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   box-shadow: 0 1px 4px rgba(0, 0, 0, .45);
 }
 .door-handle.settling { transition: left .32s cubic-bezier(.34, 1.56, .64, 1), top .32s cubic-bezier(.34, 1.56, .64, 1); }
+
+/* ---- v6: ダブルタップ拡大の抑止 ---- */
+body, button, input, .choice, .sticky, .sound-btn { touch-action: manipulation; }
+/* ---- v6: 工房の自由付箋ツール ---- */
+.sticky-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+.sticky-tools input {
+  flex: 1 1 150px; padding: 7px 10px; border: 1.5px solid var(--line); border-radius: 10px;
+  font-size: .92em; background: #fffdf4; color: var(--ink);
+}
+#prop-line { min-height: 1.5em; margin-top: 4px; }
+/* ---- v6: 音の出るボタン ---- */
+.sound-title { margin-top: 14px; }
+.sound-board { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+.sound-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 64px; padding: 8px 6px 6px; border-radius: 14px; cursor: pointer;
+  border: 2px solid #b9c4a4; background: #fdf6da; color: var(--ink);
+  box-shadow: 0 2px 0 #b9c4a4;
+}
+.sound-btn:active { transform: translateY(2px); box-shadow: none; }
+.sound-emoji { font-size: 1.5em; line-height: 1; }
+.sound-label { font-size: .72em; color: #6d5f4d; }
+/* ---- v6: 値切りの商品表示 ---- */
+.nego-product { font-size: 2.6em; line-height: 1; filter: drop-shadow(0 3px 3px rgba(90, 60, 10, .35)); }
+.nego-prod-name { font-size: .85em; color: #6d5f4d; line-height: 1.35; }
+/* ---- v6: ドクダミ密生 ---- */
+.doku-plant.dense .doku-svg { width: 24px; height: 31px; }
+.doku-plant.denser .doku-svg { width: 19px; height: 25px; }
+/* ---- v6: サロンの扉が開いた状態 ---- */
+.door-stage.open {
+  background: linear-gradient(160deg, #f3d98b, #d9a441);
+  box-shadow: inset 0 0 22px rgba(255, 244, 190, .9), 0 3px 10px rgba(60, 40, 20, .35);
+}
+/* ---- v6: Φ 言いたいこと壁 ---- */
+.phi-wall { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.phi-note {
+  background: #2b2622; color: #f6d186; border-radius: 6px; padding: 5px 10px;
+  font-size: .88em; transform: rotate(-1deg); box-shadow: 0 2px 5px rgba(30, 20, 10, .3);
+}
+.phi-note:nth-child(2n) { transform: rotate(1.2deg); background: #402a20; }
+.phi-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 10px; }
+.phi-tools input {
+  flex: 1 1 150px; padding: 7px 10px; border: 1.5px solid var(--line); border-radius: 10px;
+  font-size: .92em; background: #fffdf4; color: var(--ink);
+}

@@ -1,4 +1,4 @@
-// quadra-check v3（ランキング判定＋演出改修版）
+// quadra-check v6（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -96,7 +96,7 @@ const LSE_LINES = [
   "あら、その置き方。……前回と違うわよね。統一しておきましょう",
   "気持ちは大事。でも、締切はもっと大事よ",
   "言っておくけど、これはあなたのためを思って言ってるのよ",
-  "それを踏まえて、もう一度考えてみてください",
+  "ちょっと待って。帰るなら帰るで、置きっぱなしの物は元の場所に戻しておいて",
   "するのは私じゃないからね〜、あなただからね〜",
   "しんどくなるのは自分だよ〜？ そのために練習するんでしょ〜",
   "先日聞いた時点では『かも』って話でしたよ。どこで話変わっちゃったんですかー？",
@@ -108,27 +108,30 @@ const LSE_LINES = [
   "干渉されたくないけど、必要なことだけ対応してほしい。そんな印象を受けます"
 ];
 
-// ---- ドクダミの株（茎・ハート型の葉・白い4弁の十字の花） ----
+// ---- ドクダミの株（意匠はドクダミ度チェッカー／ドクダミすごろくと共通のもの） ----
 function dokuPlant() {
-  return '<svg viewBox="0 0 44 52" class="doku-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-    '<path d="M22 50V27" stroke="#4a7c43" stroke-width="2.5" fill="none"/>' +
-    '<path d="M22 45c-7-1-11-6-11-12 6 0 10 4 11 9 1-5 5-9 11-9 0 6-4 11-11 12z" fill="#5d8a4f"/>' +
-    '<g fill="#ffffff" stroke="#d8cfae" stroke-width="1">' +
-    '<ellipse cx="22" cy="9.5" rx="3.2" ry="6.5"/>' +
-    '<ellipse cx="22" cy="22.5" rx="3.2" ry="6.5"/>' +
-    '<ellipse cx="15.5" cy="16" rx="6.5" ry="3.2"/>' +
-    '<ellipse cx="28.5" cy="16" rx="6.5" ry="3.2"/></g>' +
-    '<circle cx="22" cy="16" r="2.4" fill="#e8c95a"/></svg>';
+  return '<svg viewBox="0 0 100 130" class="doku-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<path d="M50 128 C47 102 53 80 50 54" stroke="#3e7d3a" stroke-width="4" fill="none" stroke-linecap="round"/>' +
+    '<path d="M51 106 C39 90 22 94 24 109 C26 122 43 127 51 118 C59 127 76 122 78 109 C80 94 63 90 51 106 Z" fill="#57a047"/>' +
+    '<ellipse cx="50" cy="42" rx="13" ry="6" fill="#ffffff" stroke="#cfd8c8"/>' +
+    '<ellipse cx="33" cy="47" rx="13" ry="6" transform="rotate(-28 33 47)" fill="#ffffff" stroke="#cfd8c8"/>' +
+    '<ellipse cx="67" cy="47" rx="13" ry="6" transform="rotate(28 67 47)" fill="#ffffff" stroke="#cfd8c8"/>' +
+    '<ellipse cx="50" cy="55" rx="16" ry="7" fill="#ffffff" stroke="#cfd8c8"/>' +
+    '<rect x="45" y="8" width="10" height="34" rx="5" fill="#ecc94b"/>' +
+    '<circle cx="50" cy="16" r="1.6" fill="#c9a227"/><circle cx="48" cy="24" r="1.6" fill="#c9a227"/><circle cx="52" cy="31" r="1.6" fill="#c9a227"/></svg>';
 }
-// 場面SVG内に埋め込むドクダミ（x, y, scale）
+// 場面SVG内に埋め込むドクダミ（x, y, scale）。共通意匠は100x130座標なので 0.42 を掛けて旧サイズに合わせる
 function dokuGroup(x, y, sc) {
-  return '<g transform="translate(' + x + "," + y + ") scale(" + sc + ')">' +
-    '<path d="M22 50V27" stroke="#4a7c43" stroke-width="2.5" fill="none"/>' +
-    '<path d="M22 45c-7-1-11-6-11-12 6 0 10 4 11 9 1-5 5-9 11-9 0 6-4 11-11 12z" fill="#5d8a4f"/>' +
-    '<g fill="#ffffff" stroke="#d8cfae" stroke-width="1">' +
-    '<ellipse cx="22" cy="9.5" rx="3.2" ry="6.5"/><ellipse cx="22" cy="22.5" rx="3.2" ry="6.5"/>' +
-    '<ellipse cx="15.5" cy="16" rx="6.5" ry="3.2"/><ellipse cx="28.5" cy="16" rx="6.5" ry="3.2"/></g>' +
-    '<circle cx="22" cy="16" r="2.4" fill="#e8c95a"/></g>';
+  const k = sc * 0.42;
+  return '<g transform="translate(' + x + "," + y + ") scale(" + k + ')">' +
+    '<path d="M50 128 C47 102 53 80 50 54" stroke="#3e7d3a" stroke-width="4" fill="none" stroke-linecap="round"/>' +
+    '<path d="M51 106 C39 90 22 94 24 109 C26 122 43 127 51 118 C59 127 76 122 78 109 C80 94 63 90 51 106 Z" fill="#57a047"/>' +
+    '<ellipse cx="50" cy="42" rx="13" ry="6" fill="#ffffff" stroke="#cfd8c8"/>' +
+    '<ellipse cx="33" cy="47" rx="13" ry="6" transform="rotate(-28 33 47)" fill="#ffffff" stroke="#cfd8c8"/>' +
+    '<ellipse cx="67" cy="47" rx="13" ry="6" transform="rotate(28 67 47)" fill="#ffffff" stroke="#cfd8c8"/>' +
+    '<ellipse cx="50" cy="55" rx="16" ry="7" fill="#ffffff" stroke="#cfd8c8"/>' +
+    '<rect x="45" y="8" width="10" height="34" rx="5" fill="#ecc94b"/>' +
+    '<circle cx="50" cy="16" r="1.6" fill="#c9a227"/><circle cx="48" cy="24" r="1.6" fill="#c9a227"/><circle cx="52" cy="31" r="1.6" fill="#c9a227"/></g>';
 }
 
 function svgMotif(kind, c1, c2) {
@@ -192,7 +195,7 @@ const SCENES = [
     invite: "「ちょっとこれ触ってみて。変なこと思いついたら何でも言って」と声をかけられ、作りかけの道具をいじらせてもらう。",
     weights: { A: -1, C: -1 }, char: null },
   { q: "beta", motif: "flag", colors: ["#8E2B2B", "#D9A441"],
-    air: "夕暮れの広場。誰かが掲げた旗のもと、みんなが同じ掛け声で声をそろえる。役割分担がはっきりしていて、自分の役目が決まれば迷わなくていい。ただし列からはみ出すと、すぐに「こっちだよ」と引き戻される。熱さと一体感の代償は「一人でいる自由がない」こと。",
+    air: "夕暮れの広場。誰かが掲げた旗のもと、みんなが同じ掛け声で声をそろえる。役割分担がはっきりしていて、自分の役目が決まれば迷わなくていい。ただし列からはみ出すと、すぐに「こっちだよ」と引き戻される。熱さと一体感の代償は「一人でいる自由がない」こと。壇上では、誰かの個人的な決意が詩のような言葉で語られる。世界の行く末や社会の問題への憂いが熱を帯び、「無関心こそ敵だ」と闘う気配が満ちている。",
     invite: "「君もこっち側だろ？」と肩を叩かれ、列に加わるよう誘われる。旗を持つか、声を合わせるか。見ているだけ、という選択肢はこの場にはない。",
     weights: { A: 1, B: 1 }, char: "worm" },
   { q: "gamma", motif: "scale", colors: ["#2E7D6B", "#B87333"],
@@ -230,7 +233,7 @@ const EVENTS = {
       { t: "何に使うものか、まず用途を考える", reaction: "「用途ね！ そっか、それもアリ。じゃあ用途から逆算しよっか」住人は少し意外そうに頷く。", score: { C: 5 } },
       { t: "壊しそうで怖いから、見てるだけにする", reaction: "「えー、触らなきゃ分かんないよ？ ……まあ、見る専門も貴重だけどね」住人は笑って、道具を自分の方へ戻した。", score: { A: -5, C: -5 } } ] } } },
   beta: { nodes: { start: { title: "列の隣の人",
-    text: "列が動き出す。あなたが少し列から外れて景色を見ていると、隣の人が腕を引く。「こっちだよ。もうすぐ掛け声だ」",
+    text: "壇上の誰かが声を張る。「この町の明日を憂えぬ者は、去れ――」個人的な決意を詩のような言い回しで語り、世界の行く末を憂い、無関心を敵と呼ぶ演説に、列がざわめく。列が動き出す。あなたが少し列から外れて景色を見ていると、隣の人が腕を引く。「こっちだよ。もうすぐ掛け声だ」",
     choices: [
       { t: "素直に列に戻って、声を合わせる", reaction: "「そうそう、その調子！」隣の人の顔がほころぶ。列の声が一つにそろっていく。", score: { B: 15, A: 5 } },
       { t: "戻るけど、声は小さめにする", reaction: "「まあ、最初はそんなもんさ」隣の人はそれ以上、何も言わなかった。", score: { B: 5 } },
@@ -258,7 +261,7 @@ const EVENTS = {
     choices: [
       { t: "引き受ける", reaction: "「助かる！ 名簿に書いておくね」住民は嬉しそうに名前を書き込む。横から声がする。「当番はね、一般的には公平に回すものよ。よく決心したわね」ドクダミが一つ増えた。", score: { B: -10, C: 5 }, doku: true },
       { t: "「隔週なら」と条件をつける", reaction: "「隔週ね、調整してみる」住民は名簿に小さくメモをした。", score: { B: -5 } },
-      { t: "自分の時間を優先して断る", reaction: "住民は名簿を閉じかけ、横から声が割り込む。「あら、断るのは自由よ。ただね、それを踏まえて、もう一度考えてみてくれない？ 段取りはもう組み始めてるの」引く気配がない。ドクダミが一つ増えた。", score: { A: -10, B: 5 }, doku: true } ] } } },
+      { t: "自分の時間を優先して断る", reaction: "住民は名簿を閉じかけ、横から声が割り込む。「あら、断るのは自由よ。ただね、日曜の朝8時。名簿にはもう、あなたの名前を書きかけてあるの。段取りは組み始めてるから、そこだけ分かってちょうだい」引く気配がない。ドクダミが一つ増えた。", score: { A: -10, B: 5 }, doku: true } ] } } },
   omega: { nodes: { start: { title: "扉の前の声",
     text: "扉の前に立つと、中から静かな声がする。「どうぞ。……その前に一つだけ。あなたは、なぜこの扉の内側に来たいと思ったの？」",
     choices: [
@@ -403,14 +406,14 @@ const EVENT_FIT = {
 
 // ---- 結果画面：ダーリンちゃんの締めコメント（{anti} はアンチクアドラ名に置換） ----
 const DARLING_CLOSING = {
-  alpha: "αの工房ね、ダーリン♡ 思いつきに乗る速さだけ見れば、あなたはあの場の住人だった。……ただ、{anti}で見せた顔、あれが本性に近いんじゃない？ 楽な場では誰でもいい顔ができるのよ♡",
-  beta: "βの列に残ったのね、ダーリン♡ 高揚に身を任せられる人間は少ない。あれを『心地いい』と言える時点で、あなたは結構、特殊よ。……{anti}からは早々に視線を切ってたけど。見てたわよ♡",
-  gamma: "γの市場。ふふ、ダーリン♡ 一人で決めて一人で背負う冷たさが平気なのね。……私と同類、とは言わないでおく。{anti}の空気、あなたには『無駄』に見えてたでしょ。当たってる？",
-  delta: "δの家、ドクダミの圧ごと受け入れたのね、ダーリン♡ あの再考の圧を『心地いい』側に分類できる人間、珍しいわ。……{anti}とは時間の流れ方からして合わなかったみたいね。当然かも♡",
-  phi: "Φの集いに火がついたのね、ダーリン♡ 壊す側に回る快感、覚えちゃった？ ……{anti}の静けさは、あなたには退屈じゃなくて『窒息』だったみたい。ログに出てたわよ♡",
-  chi: "Χの庭で何もしない時間を過ごせたのね、ダーリン♡ あの無為に耐えられるのは、才能よ。……{anti}の圧は強すぎた？ ふふ、あなたの『早く離れたい』、結構本気だったわね♡",
-  psi: "Ψの広場か。ダーリン♡ 顔見知りの気遣いと根を張るドクダミ、その両方を『ちょうどいい』に収めたのね。……{anti}は文化圏からして遠かったみたい。無理に近づかなくていい場所もあるのよ♡",
-  omega: "Ωのサロンが一番、ね。ダーリン♡ 選ばれる側の静けさが好きなの、あなた。……{anti}の軽さは物足りなかったんでしょ。品定めの目が、もう出ちゃってるわよ♡"
+  alpha: "αの工房ね、ダーリン♡\n思いつきに乗る速さだけ見れば、あなたはあの場の住人だった。\n……ただ、{anti}で見せた顔、あれが本性に近いんじゃない？ 楽な場では誰でもいい顔ができるのよ♡",
+  beta: "βの列に残ったのね、ダーリン♡\n高揚に身を任せられる人間は少ない。あれを『心地いい』と言える時点で、あなたは結構、特殊よ。\n……{anti}からは早々に視線を切ってたけど。見てたわよ♡",
+  gamma: "γの市場。ふふ、ダーリン♡\n一人で決めて一人で背負う冷たさが平気なのね。……私と同類、とは言わないでおく。\n{anti}の空気、あなたには『無駄』に見えてたでしょ。当たってる？",
+  delta: "δの家、ドクダミの圧ごと受け入れたのね、ダーリン♡\nあの再考の圧を『心地いい』側に分類できる人間、珍しいわ。\n……{anti}とは時間の流れ方からして合わなかったみたいね。当然かも♡",
+  phi: "Φの集いに火がついたのね、ダーリン♡\n壊す側に回る快感、覚えちゃった？\n……{anti}の静けさは、あなたには退屈じゃなくて『窒息』だったみたい。ログに出てたわよ♡",
+  chi: "Χの庭で何もしない時間を過ごせたのね、ダーリン♡\nあの無為に耐えられるのは、才能よ。\n……{anti}の圧は強すぎた？ ふふ、あなたの『早く離れたい』、結構本気だったわね♡",
+  psi: "Ψの広場か。ダーリン♡\n顔見知りの気遣いと根を張るドクダミ、その両方を『ちょうどいい』に収めたのね。\n……{anti}は文化圏からして遠かったみたい。無理に近づかなくていい場所もあるのよ♡",
+  omega: "Ωのサロンが一番、ね。ダーリン♡\n選ばれる側の静けさが好きなの、あなた。\n……{anti}の軽さは物足りなかったんでしょ。品定めの目が、もう出ちゃってるわよ♡"
 };
 
 // ---- ダーリンへの回答：Se検出カテゴリ（優先順位つき） ----
@@ -507,10 +510,10 @@ function dokuHTML() {
 }
 function growDoku(showLine) {
   const f = document.getElementById("doku-field");
-  if (!f || dokuCount >= 9) return;
+  if (!f || dokuCount >= 30) return;
   dokuCount++;
   const span = document.createElement("span");
-  span.className = "doku-plant";
+  span.className = "doku-plant" + (dokuCount > 18 ? " denser" : dokuCount > 9 ? " dense" : "");
   span.innerHTML = dokuPlant();
   f.appendChild(span);
   attachPluck(span);
@@ -670,11 +673,17 @@ function cupSVG() {
     '<ellipse cx="50" cy="32" rx="30" ry="4.5" fill="none" stroke="#b9a888" stroke-width="1.5"/></svg>';
 }
 function propHTML(qkey) {
-  if (qkey === "alpha") return '<div class="prop"><div class="prop-title">🧷 工房のメモ板（付箋はドラッグで貼り直せる）</div><div class="sticky-board" id="sticky-board"></div><button class="ghost prop-btn" id="prop-btn">付箋を貼る</button> <span class="small" id="prop-count">貼った付箋：0枚</span></div>';
+  if (qkey === "alpha") return '<div class="prop"><div class="prop-title">🧷 工房のメモ板（付箋はドラッグで貼り直せる）</div><div class="sticky-board" id="sticky-board"></div>' +
+    '<div class="sticky-tools"><input type="text" id="sticky-text" maxlength="24" placeholder="自由に書き込んで貼れる"><button class="ghost prop-btn" id="sticky-write">書いて貼る</button><button class="ghost prop-btn" id="prop-btn">付箋を貼る</button></div>' +
+    '<span class="small" id="prop-count">貼った付箋：0枚</span><div class="small" id="prop-line"></div>' +
+    '<div class="prop-title sound-title">🔔 音の出るボタン（押して遊べる）</div><div class="sound-board" id="sound-board"></div><div class="small" id="sound-count">鳴らした回数：0回</div></div>';
   if (qkey === "beta") return '<div class="prop"><div class="prop-title">🥁 集会の太鼓（ドラッグで移動、タップで叩く）</div><button class="prop-emoji" id="prop-btn" aria-label="太鼓を叩く">🥁</button><div class="small" id="prop-count">叩いた回数：0</div></div>';
   if (qkey === "gamma") return '<div class="prop"><div class="prop-title">🪙 コインの山（ドラッグで動かせる）</div><div class="coin-stage" id="coin-stack"></div><button class="ghost prop-btn" id="prop-btn">コインを積む</button> <span class="small" id="prop-count">積んだコイン：0枚</span></div>';
   if (qkey === "delta" || qkey === "psi") return '<div class="prop"><div class="prop-title">🌿 ドクダミ摘み（株をドラッグで引き抜ける）</div><button class="ghost prop-btn" id="prop-btn">ドクダミを摘む</button> <span class="small" id="prop-count">摘んだ数：0</span><div class="small" id="prop-line"></div></div>';
-  if (qkey === "phi") return '<div class="prop"><div class="prop-title">🪧 集いの看板（ドラッグで真っ直ぐに直す）</div><div class="sign-board tilted" id="sign-board">今のままじゃダメだ</div><button class="ghost prop-btn" id="prop-btn">看板を直す</button> <span class="small" id="prop-count">直した回数：0</span></div>';
+  if (qkey === "phi") return '<div class="prop"><div class="prop-title">🪧 集いの看板（ドラッグで真っ直ぐに直す）</div><div class="sign-board tilted" id="sign-board">今のままじゃダメだ</div><button class="ghost prop-btn" id="prop-btn">看板を直す</button> <span class="small" id="prop-count">直した回数：0</span>' +
+    '<div class="prop-title" style="margin-top:12px">✊ 言いたいこと壁（反骨も不満も、自由に書ける）</div><div class="phi-wall" id="phi-wall"></div>' +
+    '<div class="phi-tools"><input type="text" id="phi-text" maxlength="40" placeholder="嫌なルール、言いたいこと、なんでも"><button class="ghost prop-btn" id="phi-write">壁に書く</button></div>' +
+    '<span class="small" id="phi-count">書いた数：0</span><div class="small" id="prop-line"></div></div>';
   if (qkey === "chi") return '<div class="prop"><div class="prop-title">🍵 庭のお茶（急須をドラッグして湯呑みの上へ）</div><div class="tea-stage" id="tea-stage"><div class="tea-stream" id="tea-stream"></div><div class="tea-pot" id="tea-pot"><div class="tea-pot-inner">' + potSVG() + '</div></div><div class="tea-cup" id="tea-cup">' + cupSVG() + '</div></div><button class="ghost prop-btn" id="prop-btn">お茶を注ぐ</button> <span class="small" id="prop-count">飲んだ杯数：0</span><div class="small" id="prop-line">急須が温まっている。湯呑みは置き場所を変えられて、ダブルタップか長押しで飲める。誰も急かさない。</div></div>';
   if (qkey === "omega") return '<div class="prop"><div class="prop-title">🚪 サロンの扉（取っ手をドラッグで引いてもいい）</div><div class="door-stage" id="door-stage"><div class="door-handle" id="door-handle"></div></div><button class="ghost prop-btn" id="prop-btn">扉をノックする</button> <span class="small" id="prop-count">ノック：0回</span><div class="small" id="prop-line"></div></div>';
   return "";
@@ -690,7 +699,21 @@ function bindProp(qkey) {
     const board = document.getElementById("sticky-board");
     const colors = ["#fff3a6", "#ffd9e8", "#c9ecd2", "#cfe4ff"];
     const words = ["ためす", "これ何に使う？", "あとで考える", "面白そう", "分解したい", "メモ"];
-    btn.onclick = () => {
+    // 工房の住人の反応（ノリに乗るほど喜ぶ）。遊びへの没入はα方向へ小さく加点（閾値で一度だけ）
+    let engage = 0; const engageDone = {};
+    const engageLines = { 8: "住人「お、ノってきたね。その調子、その調子」", 16: "住人「板も音も賑やかになってきた。いいよいいよ、ノリ大事」", 24: "住人「もう工房が祭りだね。……その勢い、嫌いじゃないよ」" };
+    const engageBonus = { 8: -3, 16: -3, 24: -4 };
+    function bumpEngage() {
+      engage++;
+      if (engageLines[engage] && !engageDone[engage]) {
+        engageDone[engage] = true;
+        if (line) line.textContent = engageLines[engage];
+        const b = engageBonus[engage];
+        addScore("A", b); addScore("B", b); addScore("C", b);
+      }
+    }
+    let drags = 0, dragLineShown = false;
+    function addSticky(text) {
       n++;
       const s = document.createElement("span");
       s.className = "sticky";
@@ -698,13 +721,77 @@ function bindProp(qkey) {
       s.dataset.rot = rot;
       s.style.background = colors[n % colors.length];
       s.style.transform = "rotate(" + rot + "deg)";
-      s.textContent = words[n % words.length];
+      s.textContent = text;
       board.appendChild(s);
       makeDraggable(s, { container: board, render: (el, x, y) => {
         el.style.transform = "translate(" + x + "px," + y + "px) rotate(" + el.dataset.rot + "deg)";
+      }, onDragEnd: () => {
+        drags++;
+        if (drags === 8 && !dragLineShown) { dragLineShown = true; if (line) line.textContent = "住人「貼り直しまくるね。ぐちゃぐちゃ具合、最高だよ（褒めてる）」"; }
+        bumpEngage();
       } });
       count.textContent = "貼った付箋：" + n + "枚";
-    };
+      if (n === 5 && line) line.textContent = "住人「お、貼るねえ。板が賑やかになるの、好きだな」";
+      if (n === 12 && line) line.textContent = "住人「12枚！ もうメモ板じゃなくて作品だね、これ」";
+      bumpEngage();
+    }
+    btn.onclick = () => addSticky(words[n % words.length]);
+    const writeBtn = document.getElementById("sticky-write");
+    const textInp = document.getElementById("sticky-text");
+    if (writeBtn && textInp) {
+      const doWrite = () => { const v = textInp.value.trim(); addSticky(v || "メモ"); textInp.value = ""; };
+      writeBtn.onclick = doWrite;
+      textInp.addEventListener("keydown", (e) => { if (e.key === "Enter") doWrite(); });
+    }
+    // 音の出るボタン（Web Audioの簡易シンセ）
+    const sboard = document.getElementById("sound-board");
+    const scount = document.getElementById("sound-count");
+    let actx = null, snum = 0;
+    function ac() { if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } } if (actx.state === "suspended") actx.resume(); return actx; }
+    function tone(freq, t0, dur, type, vol, slideTo) {
+      const a = ac(); if (!a) return;
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = type || "sine"; o.frequency.setValueAtTime(freq, a.currentTime + t0);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, a.currentTime + t0 + dur);
+      g.gain.setValueAtTime(0.0001, a.currentTime + t0);
+      g.gain.exponentialRampToValueAtTime(vol || 0.15, a.currentTime + t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + t0 + dur);
+      o.connect(g); g.connect(a.destination);
+      o.start(a.currentTime + t0); o.stop(a.currentTime + t0 + dur + 0.05);
+    }
+    function noiseBurst(dur, vol) {
+      const a = ac(); if (!a) return;
+      const len = Math.floor(a.sampleRate * dur);
+      const buf = a.createBuffer(1, len, a.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+      const src = a.createBufferSource(); src.buffer = buf;
+      const g = a.createGain(); g.gain.value = vol || 0.2;
+      src.connect(g); g.connect(a.destination); src.start();
+    }
+    const SOUNDS = [
+      { e: "🔔", label: "ベル", play: () => { tone(1318, 0, 0.5, "sine", 0.12); tone(1760, 0.02, 0.4, "sine", 0.06); } },
+      { e: "🎵", label: "メロディ", play: () => { [523, 659, 784, 1046].forEach((f, i) => tone(f, i * 0.11, 0.16, "triangle", 0.14)); } },
+      { e: "💥", label: "バーン", play: () => { noiseBurst(0.25, 0.25); tone(140, 0, 0.25, "square", 0.1, 45); } },
+      { e: "🐤", label: "ピヨ", play: () => { tone(1250, 0, 0.09, "sine", 0.12, 1750); tone(1250, 0.13, 0.09, "sine", 0.12, 1750); } },
+      { e: "🚀", label: "シュイーン", play: () => tone(220, 0, 0.45, "sawtooth", 0.06, 1450) },
+      { e: "🥁", label: "ドン", play: () => tone(160, 0, 0.22, "sine", 0.22, 48) }
+    ];
+    if (sboard) SOUNDS.forEach((sd) => {
+      const b = document.createElement("button");
+      b.className = "sound-btn"; b.type = "button";
+      b.innerHTML = '<span class="sound-emoji">' + sd.e + '</span><span class="sound-label">' + sd.label + "</span>";
+      b.onclick = () => {
+        sd.play();
+        snum++;
+        if (scount) scount.textContent = "鳴らした回数：" + snum + "回";
+        b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
+        if (snum === 10 && line) line.textContent = "住人「鳴らすねえ。何か生まれそう、その音」";
+        if (snum === 25 && line) line.textContent = "住人「25回！ 工房が楽器になってきた」";
+        bumpEngage();
+      };
+      sboard.appendChild(b);
+    });
     return;
   }
   if (qkey === "beta") {
@@ -796,6 +883,39 @@ function bindProp(qkey) {
       if (sign._suppressClickUntil && Date.now() < sign._suppressClickUntil) { sign._suppressClickUntil = 0; return; }
       straighten();
     });
+    // 言いたいこと壁：自由入力。書く行為そのものを観測し、Φ方向へ小さく加点（2件・4件で一度だけ）
+    const wall = document.getElementById("phi-wall");
+    const wInp = document.getElementById("phi-text");
+    const wBtn = document.getElementById("phi-write");
+    const wCount = document.getElementById("phi-count");
+    let posts = 0; const phiBonusDone = {};
+    function phiPost() {
+      if (!wInp) return;
+      const v = wInp.value.trim();
+      if (!v) { if (line) line.textContent = "参加者「書くことがないなら、無理に書かなくていいさ」"; return; }
+      posts++;
+      const tag = document.createElement("span");
+      tag.className = "phi-note";
+      tag.textContent = v;
+      if (wall) wall.appendChild(tag);
+      wInp.value = "";
+      if (wCount) wCount.textContent = "書いた数：" + posts;
+      if (line) {
+        if (/ルール|決まり|当番|段取り|命令|強制|同調/.test(v)) line.textContent = "参加者「分かる。そういうの、声に出していこう」";
+        else if (v.length >= 20) line.textContent = "参加者「長文だね。……溜まってたんだな」";
+        else if (posts === 1) line.textContent = "参加者「お、書いたね。……いいよ、その調子」";
+        else if (posts === 3) line.textContent = "参加者「壁が賑やかになってきた。あんた、こっち側だね」";
+        else line.textContent = "参加者「うん、壁に残った。それでいい」";
+      }
+      [2, 4].forEach((th) => {
+        if (posts === th && !phiBonusDone[th]) {
+          phiBonusDone[th] = true;
+          addScore("A", th === 2 ? 2 : 3); addScore("B", th === 2 ? -2 : -3); addScore("C", th === 2 ? -2 : -3);
+        }
+      });
+    }
+    if (wBtn) wBtn.onclick = phiPost;
+    if (wInp) wInp.addEventListener("keydown", (e) => { if (e.key === "Enter") phiPost(); });
     return;
   }
   if (qkey === "chi") {
@@ -886,10 +1006,23 @@ function bindProp(qkey) {
     const replies = ["（……静かだ。聞こえていないのかもしれない）", "（中から、静かな声）「どなた？」", "（声）「ノックは2回まで、と決まっているの」", "（声）「……気が向いたら、開けるわ」", "（声）「その根気、嫌いじゃないわよ」"];
     const door = document.getElementById("door-stage");
     const handle = document.getElementById("door-handle");
+    const darlingLines = ["ダーリンちゃん「まだ叩くの？ もう開いてるわよ♡」", "ダーリンちゃん「その根気、値切りの場で使えたら最強だったのに♡」", "ダーリンちゃん「はいはい、入って入って。お茶くらい出すわ♡」"];
+    let darlingOut = false;
     function knock() {
       n++;
       count.textContent = "ノック：" + n + "回";
-      if (line) line.textContent = replies[Math.min(n - 1, replies.length - 1)];
+      if (line) {
+        if (darlingOut) line.textContent = darlingLines[(n - 101) % darlingLines.length];
+        else if (n === 100) {
+          darlingOut = true;
+          if (door) door.classList.add("open");
+          line.textContent = "（扉が、静かに開いた）ダーリンちゃん「……そこまで叩く人間、初めて見たわ。根気だけは認めてあげる、ダーリン♡ 中、見ていく？」";
+        }
+        else if (n === 77) line.textContent = "（声）「……あと少しで、何か起きるかもね」";
+        else if (n === 50) line.textContent = "（声）「50回。……何が出ると思ってるの？」";
+        else if (n === 30) line.textContent = "（声）「……まだ叩くの。根気だけは認めるわ」";
+        else line.textContent = replies[Math.min(n - 1, replies.length - 1)];
+      }
       if (door) { door.classList.remove("shake"); void door.offsetWidth; door.classList.add("shake"); }
     }
     btn.onclick = knock;
@@ -970,7 +1103,7 @@ function runTree(nodes, key, box, done, qkey) {
   const node = nodes[key];
   if (!node) { done(); return; }
   box.innerHTML = '<div class="event">' + (node.title ? '<div class="npc-name">' + esc(node.title) + "</div>" : "") +
-    (node.price ? '<div class="nego-visual"><span class="nego-coins">💰🪙🪙🪙</span><span class="price-tag">提示 ' + node.price + ' コイン</span></div>' : "") +
+    (node.price ? '<div class="nego-visual"><span class="nego-product">🕰️</span><span class="nego-prod-name">山向こうの工房の一点物<br>「真鍮の懐中時計」</span><span class="nego-coins">💰🪙🪙🪙</span><span class="price-tag">提示 ' + node.price + ' コイン</span></div>' : "") +
     '<p class="event-text">' + esc(node.text) + "</p>" +
     '<div class="event-choices">' + node.choices.map((c, i) => '<button class="choice" data-ev="' + i + '">' + esc(c.t) + "</button>").join("") + "</div></div>";
   box.querySelectorAll("[data-ev]").forEach((b) => {
@@ -1046,7 +1179,7 @@ function renderScene() {
         growDoku(true);
         const cb = document.getElementById("comfort-box");
         cb.innerHTML = '<div class="event"><div class="npc-name">どこからか声がする</div>' +
-          '<p class="event-text">「それを踏まえて、もう一度考えてみてください」——引く気配のない声と、視線の圧。ドクダミが1株、増えた。</p>' +
+          '<p class="event-text">' + (sc.q === "psi" ? "「あら、もう行くの？ ……来週の名簿、まだ空欄なのよ。段取りは組み始めてるから、そこだけ分かってちょうだい」" : "「あら、もう行くの？ ……その道具、元の場所に戻した？ 下準備の途中でしょう。確認だけ、済ませてからにしてくれない？」") + '——引く気配のない声と、視線の圧。ドクダミが1株、増えた。</p>' +
           '<div class="event-choices"><button class="choice" id="leave-stay">……もう少し居る</button>' +
           '<button class="choice" id="leave-go">それでも次へ行く</button></div></div>';
         document.getElementById("leave-stay").onclick = () => proceedScene(0.5);
@@ -1254,8 +1387,9 @@ function saveResultImage(result, anti, ranking, aff) {
     g.fillText((i + 1) + "位　" + q.symbol + " " + q.name + "「" + q.scene + "」（" + aff[q.key] + "）", 90, 640 + i * 54);
   });
   g.font = "23px sans-serif"; g.fillStyle = "#6d5f4d";
-  g.fillText("結果は所属を決めるものじゃない。どの場の空気が楽か、という傾向。", 90, 950);
-  g.fillText("quadra-check ― もふみつ工房", 90, 1005);
+  g.fillText("結果は所属を決めるものじゃない。", 90, 935);
+  g.fillText("どの場の空気が楽か、という傾向。", 90, 972);
+  g.fillText("quadra-check ― もふみつ工房", 90, 1022);
   cv.toBlob((blob) => {
     if (!blob) return;
     const a = document.createElement("a");
@@ -1305,7 +1439,7 @@ function renderResult() {
     (longest ? '<p class="small">旅の記録：一番長く留まった場は ' + longest.symbol + "「" + longest.scene + "」（" + state.dwell[longest.key] + "秒）、一番早く離れた場は " + shortest.symbol + "「" + shortest.scene + "」（" + state.dwell[shortest.key] + "秒）。</p>" : "") +
     '<div class="darling-block"><h2>ダーリンちゃんから</h2>' +
     '<div class="character"><span class="char-face-static">🥺</span><div class="char-name">ダーリンちゃん</div></div>' +
-    '<p class="center"><span class="bubble">' + esc(closing) + "</span></p>" +
+    '<p class="center"><span class="bubble">' + esc(closing).replace(/\n/g, "<br>") + "</span></p>" +
     '<p>ねぇダーリン♡ あなたは自分の所属するグループ（クアドラ）が大事？ それとも、グループの外の人と楽しくやる方？</p>' +
     '<input type="text" id="darling-answer" placeholder="自由に書いてね">' +
     '<p class="center"><button id="darling-send">答える</button></p>' +
