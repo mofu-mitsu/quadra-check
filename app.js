@@ -1,4 +1,4 @@
-// quadra-check v9（ランキング判定＋演出改修版）
+// quadra-check v10（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -405,6 +405,17 @@ const EVENT_FIT = {
 };
 
 // ---- 結果画面：ダーリンちゃんの締めコメント（{anti} はアンチクアドラ名に置換） ----
+// 理論上のアンチペア（符号の全反転＝モデルKのサブクアドラ対応。ながれぼしさんの整理に基づく）
+const ANTI_PAIR = {
+  alpha: { pair: "omega", note: "同じ顔ぶれでも、忠誠と規律の世界" },
+  omega: { pair: "alpha", note: "同じ顔ぶれでも、自由と遊びの世界" },
+  beta: { pair: "psi", note: "旗も理念もなく、干渉されずに過ごす静かな市民の世界" },
+  psi: { pair: "beta", note: "静けさの反対側は、理念と熱狂で一致団結する世界" },
+  gamma: { pair: "chi", note: "競争も成果主義もなく、みんなで仲良く過ごす共同体の世界" },
+  chi: { pair: "gamma", note: "穏やかさの反対側は、実力と成果で勝負する世界" },
+  delta: { pair: "phi", note: "誠実な労働倫理の反対側は、伝統に反発して個性を爆発させる革命の世界" },
+  phi: { pair: "delta", note: "反発の反対側は、誠実さと役割で安定を守る世界" }
+};
 const DARLING_CLOSING = {
   alpha: "αの工房ね、ダーリン♡\n思いつきに乗る速さだけ見れば、あなたはあの場の住人だった。\n……ただ、{anti}で見せた顔、あれが本性に近いんじゃない？ 楽な場では誰でもいい顔ができるのよ♡",
   beta: "βの列に残ったのね、ダーリン♡\n高揚に身を任せられる人間は少ない。あれを『心地いい』と言える時点で、あなたは結構、特殊よ。\n……{anti}からは早々に視線を切ってたけど。見てたわよ♡",
@@ -1555,6 +1566,7 @@ function renderResult() {
     "<h1 class='center result-title'>" + result.symbol + " " + result.name + " ― " + result.theme + "「" + result.scene + "」</h1>" +
     "<p>" + result.desc + "</p>" +
     '<p class="small">このクアドラのタイプ候補：' + result.types + "</p>" +
+    (ANTI_PAIR[result.key] ? '<p class="small">ちなみに理論上、このクアドラの反対側にあたるのは ' + QUADRAS[ANTI_PAIR[result.key].pair].symbol + " " + QUADRAS[ANTI_PAIR[result.key].pair].name + " ― " + QUADRAS[ANTI_PAIR[result.key].pair].theme + "「" + QUADRAS[ANTI_PAIR[result.key].pair].scene + "」（" + ANTI_PAIR[result.key].note + "）で、このクアドラの空気が合う人は、そちらのアンチ寄りになりやすいと言われている。あくまで傾向の話で、あなた個人のアンチは下の実測の最下位で別に出している。</p>" : "") +
     '<p class="small">この結果は、あなたが「所属するクアドラ」を決めるものじゃない。8つの場の中で、どの空気が楽に感じられたかという傾向にすぎない。別のクアドラの人と一緒にいて楽しい、なんてことは普通にあるし、クアドラが違うからこそ見える景色もある。</p>' +
     (state.selfType ? '<p class="small">あなたの自認：' + esc(state.selfType) + "</p>" : "") +
     "<h2>3軸パラメータ</h2>" +
