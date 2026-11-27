@@ -1,4 +1,4 @@
-// quadra-check v8（ランキング判定＋演出改修版）
+// quadra-check v9（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -195,7 +195,7 @@ const SCENES = [
     invite: "「ちょっとこれ触ってみて。変なこと思いついたら何でも言って」と声をかけられ、作りかけの道具をいじらせてもらう。",
     weights: { A: -1, C: -1 }, char: null },
   { q: "beta", motif: "flag", colors: ["#8E2B2B", "#D9A441"],
-    air: "夕暮れの広場。誰かが掲げた旗のもと、みんなが同じ掛け声で声をそろえる。役割分担がはっきりしていて、自分の役目が決まれば迷わなくていい。ただし列からはみ出すと、すぐに「こっちだよ」と引き戻される。熱さと一体感の代償は「一人でいる自由がない」こと。壇上では、誰かの個人的な決意が詩のような言葉で語られる。世界の行く末や社会の問題への憂いが熱を帯び、「無関心こそ敵だ」と闘う気配が満ちている。",
+    air: "夕暮れの広場。旗のもとに集まった人々が、共通の理念を掲げて声をそろえる。ここでは、個人的な決意や想いが「詩」や「劇」のような言葉で語られ、聞く者の胸を震わせる。世界の行く末や社会の問題への憂いが熱を帯び、「無関心こそ敵だ」と闘う気配が満ちている。理念と感情が共鳴すれば、これほど心強い場所はない。ただし実社会のベータは、厳格なヒエラルキーと規律の顔も持つ。列からはみ出せば引き戻され、理念に共鳴できない者には、居場所がない。",
     invite: "「君もこっち側だろ？」と肩を叩かれ、列に加わるよう誘われる。旗を持つか、声を合わせるか。見ているだけ、という選択肢はこの場にはない。",
     weights: { A: 1, B: 1 }, char: "worm" },
   { q: "gamma", motif: "scale", colors: ["#2E7D6B", "#B87333"],
@@ -211,7 +211,7 @@ const SCENES = [
     invite: "「このルール、おかしいと思わない？」と問いかけられ、既存のやり方に異を唱えるかどうかを試される。",
     weights: { A: 1, B: -1 }, char: "worm" },
   { q: "chi", motif: "rainbow", colors: ["#9BD3E8", "#F7C6D9"],
-    air: "α工房と同じ顔ぶれなのに、ここはもっと穏やかで整った理想郷。誰もがのびのびと過ごし、争いがなく、思いつきがそのまま形になる。「みんなが心地よくいられる場所」をみんなで守っている。",
+    air: "α工房と同じ顔ぶれなのに、ここはもっと穏やかで整った理想郷。陽だまりの庭で、誰もが好きな場所を見つけてくつろいでいる。争いはなく、時間はゆっくり流れ、思いつきは笑い声とともにそのまま形になる。誰も急かされず、誰も置いていかれない。「みんなが心地よくいられる場所」を、みんなでそっと守っている——喧騒の届かない、小さなユートピア。",
     invite: "「ここでは好きにしていいよ。居たいだけいていいから」と言われ、何も求められずに過ごす。",
     weights: { A: -1, B: 1 }, char: null },
   { q: "psi", motif: "fountain", colors: ["#5B7C99", "#A66A4F"],
@@ -457,6 +457,16 @@ const DARLING_CALM = [
 const state = { name: "", selfType: "", scores: { A: 0, B: 0, C: 0 },
   sceneIdx: 0, taskIdx: 0, comfort: {}, dwell: {}, fit: {}, history: [], sceneStart: 0 };
 const app = document.getElementById("app");
+
+// ダブルタップ拡大の防止（iOS Safariはuser-scalable=noを無視するため）。連打して遊ぶ要素は対象外
+document.addEventListener("gesturestart", (e) => e.preventDefault());
+let lastTouchEnd = 0;
+document.addEventListener("touchend", (e) => {
+  if (e.target.closest && e.target.closest(".no-zoom-guard, .doku-plant, .sound-btn, .prop-emoji")) return;
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) e.preventDefault();
+  lastTouchEnd = now;
+}, { passive: false });
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function addScore(axis, v) { state.scores[axis] += v; }
 function clamp(v) { return Math.max(-100, Math.min(100, Math.round(v))); }
@@ -694,7 +704,32 @@ function bindProp(qkey) {
   const count = document.getElementById("prop-count");
   const line = document.getElementById("prop-line");
   const dragHook = () => noteWormDrag(qkey);
+  btn.classList.add("no-zoom-guard");
   let n = 0;
+  // 小物用の効果音（太鼓など、α以外の場面から使う）
+  let sfxCtx = null;
+  function sfxAudio() { if (!sfxCtx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) sfxCtx = new AC(); } if (sfxCtx && sfxCtx.state === "suspended") sfxCtx.resume(); return sfxCtx; }
+  function sfxTone(freq, delay, dur, type, vol, slideTo) {
+    const ac = sfxAudio(); if (!ac) return;
+    const t0 = ac.currentTime + (delay || 0);
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type || "sine"; o.frequency.setValueAtTime(freq, t0);
+    if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t0 + dur);
+    g.gain.setValueAtTime(vol || 0.15, t0);
+    g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    o.connect(g); g.connect(ac.destination); o.start(t0); o.stop(t0 + dur + 0.05);
+  }
+  function sfxNoise(dur, vol) {
+    const ac = sfxAudio(); if (!ac) return;
+    const len = Math.floor(ac.sampleRate * dur);
+    const buf = ac.createBuffer(1, len, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const g = ac.createGain(); g.gain.value = vol || 0.15;
+    const f = ac.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 900;
+    src.connect(f); f.connect(g); g.connect(ac.destination); src.start();
+  }
   if (qkey === "alpha") {
     const board = document.getElementById("sticky-board");
     const colors = ["#fff3a6", "#ffd9e8", "#c9ecd2", "#cfe4ff"];
@@ -773,13 +808,16 @@ function bindProp(qkey) {
       src.connect(g); g.connect(a.destination); src.start();
     }
     // 謎のボタン：効果音・飛ぶ絵文字/顔文字・謎の短文がランダムに出る（予測不能がαの遊び）
-    const FLYERS = ["✨", "⭐", "🎈", "🫧", "🍬", "🎀", "🪄", "🐛", "🌸", "🍄", "🛸", "👾", "🧸", "💫", "(・∀・)", "(｀・ω・´)", "( ˘ω˘ )", "ฅ(´꒳`ฅ)", "(ﾉ´∀`)ﾉ", "( ´ ▽ ` )", "Σ(ﾟДﾟ)", "(¬_¬)", "(´ε` )", "٩(ˊᗜˋ*)و"];
+    const FLYERS = ["✨", "⭐", "🎈", "🫧", "🍬", "🎀", "🪄", "🐛", "🌸", "🍄", "🛸", "👾", "🧸", "💫", "(・∀・)", "(｀・ω・´)", "( ˘ω˘ )", "ฅ(´꒳`ฅ)", "(ﾉ´∀`)ﾉ", "( ´ ▽ ` )", "Σ(ﾟДﾟ)", "(¬_¬)", "(´ε` )", "٩(ˊᗜˋ*)و", "＼マッネマーネ／", "('ω'('ω'('ω')'ω')'ω')", "(∩^o^)⊃━☆ﾟ.*･｡ﾁﾝｸﾙﾎｲｯ！", "|　՞ਊ՞　|ｷﾞｬｰｽ！！", "(´>ω∂`)どうかな～☆", "ﾊﾟｧﾝ！( ᐛ👐)ﾊﾟｧ", "( ⁰▱⁰ )YEAH！"];
     const MYSTERY_LINES = [
       "住人「今の音、なに？」", "住人「出たね。何かは分からないけど、出たね」", "住人「それ、昨日は出なかったやつだ」",
       "（どこかで何かが光った）", "住人「記録しとく？ ……やめとこ、謎のままがいい」", "（工房の奥で、誰かが拍手した）",
       "住人「当たり？ ハズレ？ 決めるのは君だよ」", "（謎の振動。机が少し揺れた）", "住人「もう一回押してみ？ 多分、別のことが起きる」",
       "（天井から紙吹雪みたいな何かが1枚だけ落ちてきた）", "住人「今のは新作。名前はまだない」", "（時計の針が一瞬、逆に回った気がした）",
-      "住人「ふふ、運がいいね。……何に運がいいのかは謎だけど」", "（床の付箋が1枚、勝手に裏返った）", "住人「そのボタン、たまに機嫌がいい日があるんだ」"
+      "住人「ふふ、運がいいね。……何に運がいいのかは謎だけど」", "（床の付箋が1枚、勝手に裏返った）", "住人「そのボタン、たまに機嫌がいい日があるんだ」",
+      "住人「今日の合言葉は『ﾁﾝｸﾙﾎｲｯ』だよ」", "（謎の言葉が壁に浮かんだ：『YEAH！』）", "住人「ｷﾞｬｰｽ！！ ……いや、なんでもない」",
+      "（何かが弾けた。めでたい気がする）", "住人「(´>ω∂`)どうかな～☆ ……って顔、するな」", "（工房の全員が一瞬、同じ方を向いた）",
+      "住人「今の、当たりだよ。多分」", "（謎の箱が少しだけ開いた。中は見えない）", "住人「マッネマーネ。……意味は聞くな」"
     ];
     const PENTA = [523, 587, 659, 784, 880];
     const PATTERNS = [
@@ -807,6 +845,21 @@ function bindProp(qkey) {
         setTimeout(() => f.remove(), 1700);
       }
     }
+    const AA_BLOCKS = [
+      "＼マッネマーネ／\n('ω'('ω'('ω')'ω')'ω')",
+      "Yeah！\n╭◜◝  ͡  ◜◝╮    ╭◜◝  ͡  ◜◝╮\n(    •ω•     )     (    •ω•     )\n╰◟◞  ͜  ◟╭◜◝  ͡  ◜◝╮ ͜  ◟◞╯\n 　 　   (    •ω•     )\n 　　    ╰◟◞  ͜  ◟◞╯",
+      "ﾊﾟｧﾝ！ﾊﾟｧﾝ！ﾊﾟｧﾝ！\n( ᐛ👐)ﾊﾟｧ",
+      "(∩^o^)⊃━☆ﾟ.*･｡\nﾁﾝｸﾙﾎｲｯ！"
+    ];
+    function spawnAA() {
+      const prop = sboard ? sboard.closest(".prop") : null;
+      if (!prop) return;
+      const pre = document.createElement("pre");
+      pre.className = "aa-pop";
+      pre.textContent = AA_BLOCKS[Math.floor(Math.random() * AA_BLOCKS.length)];
+      prop.appendChild(pre);
+      setTimeout(() => pre.remove(), 3200);
+    }
     const MYSTERY_BTNS = ["❓", "🎁", "🌀", "📦", "🫧", "✨"];
     if (sboard) MYSTERY_BTNS.forEach((em) => {
       const b = document.createElement("button");
@@ -815,6 +868,7 @@ function bindProp(qkey) {
       b.onclick = () => {
         PATTERNS[Math.floor(Math.random() * PATTERNS.length)]();
         spawnFlyers();
+        if (Math.random() < 0.08) spawnAA();
         snum++;
         if (scount) scount.textContent = "出た回数：" + snum + "回";
         b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
@@ -839,6 +893,8 @@ function bindProp(qkey) {
     const wormLines = ["芋虫「音の大きさと一体感は比例する、らしい」", "芋虫「……叩き方が雑だ。だが熱はある」", "芋虫「記録：太鼓、よく響いている」"];
     btn.onclick = () => {
       n++;
+      sfxTone(150, 0, 0.16, "sine", 0.3, 52); sfxNoise(0.07, 0.12);
+      if (n % 10 === 0) sfxTone(660, 0.02, 0.12, "triangle", 0.12);
       btn.classList.remove("shake"); void btn.offsetWidth; btn.classList.add("shake");
       count.textContent = "叩いた回数：" + n + (n >= 5 ? "（列の声が少しそろってきた）" : "");
       if (line) {
@@ -1282,7 +1338,7 @@ function renderTask() {
 function renderWait(t, head) {
   app.innerHTML = '<div class="card">' + head + "<h2>" + t.title + "</h2><p>" + t.text + "</p>" +
     '<div class="waitbar"><div id="waitfill"></div></div>' +
-    '<p class="center"><button class="ghost" id="mash">様子を見る</button></p>' +
+    '<p class="center"><button class="ghost no-zoom-guard" id="mash">様子を見る</button></p>' +
     '<p class="small center">押した回数：<span id="mashcount">0</span></p>' +
     '<p class="small center" id="mashline"></p></div>';
   bindBack();
@@ -1512,7 +1568,7 @@ function renderResult() {
     '<div class="character"><span class="char-face-static">🥺</span><div class="char-name">ダーリンちゃん</div></div>' +
     '<p class="center"><span class="bubble">' + esc(closing).replace(/\n/g, "<br>") + "</span></p>" +
     '<p>ねぇダーリン♡ あなたは自分の所属するグループ（クアドラ）が大事？ それとも、グループの外の人と楽しくやる方？</p>' +
-    '<input type="text" id="darling-answer" placeholder="自由に書いてね">' +
+    '<textarea id="darling-answer" rows="3" placeholder="自由に書いてね（改行できる）"></textarea>' +
     '<p class="center"><button id="darling-send">答える</button></p>' +
     '<div id="darling-reply"></div></div>' +
     '<div class="share-row"><button id="btn-share">結果を共有</button><button class="ghost" id="btn-save-img">結果を画像で保存</button></div>' +
