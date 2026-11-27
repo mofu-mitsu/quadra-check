@@ -1,4 +1,4 @@
-// quadra-check v14（ランキング判定＋演出改修版）
+// quadra-check v15（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -487,7 +487,19 @@ const DARLING_CALM = [
   "……なるほど。所属の話になると、人はだいたい本音か建前のどちらかに寄る。あなたはどっちに寄ってたと思う？"
 ];
 const state = { name: "", selfType: "", scores: { A: 0, B: 0, C: 0 },
-  sceneIdx: 0, taskIdx: 0, comfort: {}, dwell: {}, fit: {}, history: [], sceneStart: 0 };
+  sceneIdx: 0, taskIdx: 0, comfort: {}, dwell: {}, fit: {}, history: [], sceneStart: 0,
+  texts: { stickies: [], phiWall: [] }, logged: false };
+
+// ---- 診断ログ送信（GAS→Googleスプレッドシート） ----
+// みつきがデプロイしたWebアプリURLをここに貼る（空の間は送信しない）
+const GAS_URL = "";
+function sendLog(payload) {
+  if (!GAS_URL) return;
+  try {
+    fetch(GAS_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) }).catch(() => {});
+  } catch (e) { /* ログ送信の失敗で診断を止めない */ }
+}
+function kvStr(obj) { return Object.keys(obj).map((k) => k + ":" + obj[k]).join(", "); }
 const app = document.getElementById("app");
 
 // ダブルタップ拡大の防止（iOS Safariはuser-scalable=noを無視するため）。連打して遊ぶ要素は対象外
@@ -809,7 +821,7 @@ function bindProp(qkey) {
     const writeBtn = document.getElementById("sticky-write");
     const textInp = document.getElementById("sticky-text");
     if (writeBtn && textInp) {
-      const doWrite = () => { const v = textInp.value.trim(); addSticky(v || "メモ"); textInp.value = ""; };
+      const doWrite = () => { const v = textInp.value.trim(); if (v) state.texts.stickies.push(v); addSticky(v || "メモ"); textInp.value = ""; };
       writeBtn.onclick = doWrite;
       textInp.addEventListener("keydown", (e) => { if (e.key === "Enter") doWrite(); });
     }
@@ -1033,6 +1045,7 @@ function bindProp(qkey) {
       const v = wInp.value.trim();
       if (!v) { if (line) line.textContent = "参加者「書くことがないなら、無理に書かなくていいさ」"; return; }
       posts++;
+      state.texts.phiWall.push(v);
       const tag = document.createElement("span");
       tag.className = "phi-note";
       tag.textContent = v;
@@ -1582,6 +1595,15 @@ function renderResult() {
   const longest = dwellSorted.length ? QUADRAS[dwellSorted[0]] : null;
   const shortest = dwellSorted.length ? QUADRAS[dwellSorted[dwellSorted.length - 1]] : null;
   const closing = (DARLING_CLOSING[result.key] || "").replace("{anti}", anti.symbol + " " + anti.name);
+  if (!state.logged) {
+    state.logged = true;
+    sendLog({ type: "result", name: state.name, selfType: state.selfType,
+      result: result.key, anti: anti.key,
+      ranking: ranking.map((q) => q.key + ":" + aff[q.key]).join(", "),
+      a: Math.round(state.scores.A), b: Math.round(state.scores.B), c: Math.round(state.scores.C),
+      comfort: kvStr(state.comfort), dwell: kvStr(state.dwell), fit: kvStr(state.fit),
+      stickies: state.texts.stickies.join(" / "), phiWall: state.texts.phiWall.join(" / ") });
+  }
   app.innerHTML = '<div class="card result-card"><div class="result-deco l">' + dokuPlant() + '</div><div class="result-deco r">' + dokuPlant() + "</div>" +
     '<div class="result-symbol">' + result.symbol + "</div>" +
     "<h2 class='center'>" + who + "に合うクアドラは</h2>" +
@@ -1610,6 +1632,7 @@ function renderResult() {
     '<p class="center"><button class="ghost" id="btn-again">もう一度旅する</button></p></div>';
   document.getElementById("btn-again").onclick = () => {
     state.scores = { A: 0, B: 0, C: 0 }; state.comfort = {}; state.dwell = {}; state.fit = {}; state.history = [];
+    state.texts = { stickies: [], phiWall: [] }; state.logged = false;
     state.sceneIdx = 0; state.taskIdx = 0;
     renderTop();
   };
@@ -1627,6 +1650,7 @@ function renderResult() {
   document.getElementById("btn-save-img").onclick = () => saveResultImage(result, anti, ranking, aff);
   document.getElementById("darling-send").onclick = () => {
     const text = document.getElementById("darling-answer").value;
+    if (text.trim()) sendLog({ type: "darling", name: state.name, selfType: state.selfType, result: result.key, darlingAnswer: text });
     const box = document.getElementById("darling-reply");
     let hit = null;
     for (const cat of SE_CATEGORIES) {
