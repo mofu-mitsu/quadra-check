@@ -20,6 +20,9 @@ body {
   padding: 14px 20px; border-bottom: 1px solid var(--line);
 }
 .logo { font-weight: bold; letter-spacing: .08em; }
+.logo-kana { font-size: .78em; color: #8a7d6b; letter-spacing: .02em; }
+.breadcrumb { max-width: 720px; margin: 0 auto; padding: 10px 20px 0; font-size: .8em; color: #8a7d6b; }
+.breadcrumb a { color: #8a7d6b; }
 .tagline { font-size: .85em; color: #8a7d6b; }
 .site-footer { text-align: center; font-size: .8em; color: #8a7d6b; padding: 24px 12px; }
 #app { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
