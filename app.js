@@ -1,4 +1,4 @@
-// quadra-check v17（ランキング判定＋演出改修版）
+// quadra-check v18（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -488,7 +488,7 @@ const DARLING_CALM = [
 ];
 const state = { name: "", selfType: "", scores: { A: 0, B: 0, C: 0 },
   sceneIdx: 0, taskIdx: 0, comfort: {}, dwell: {}, fit: {}, history: [], sceneStart: 0,
-  texts: { stickies: [], phiWall: [] }, logged: false };
+  texts: { stickies: [], phiWall: [] }, choices: [], logged: false };
 
 // ---- 診断ログ送信（GAS→Googleスプレッドシート） ----
 // みつきがデプロイしたWebアプリURLをここに貼る（空の間は送信しない）
@@ -1268,6 +1268,7 @@ function runTree(nodes, key, box, done, qkey) {
   box.querySelectorAll("[data-ev]").forEach((b) => {
     b.onclick = () => {
       const c = node.choices[Number(b.dataset.ev)];
+      state.choices.push((qkey || "?") + "：" + c.t);
       if (c.score) Object.keys(c.score).forEach((ax) => addScore(ax, c.score[ax]));
       const f = EVENT_FIT[c.t];
       if (typeof f === "number" && qkey) state.fit[qkey] = (state.fit[qkey] || 0) + f;
@@ -1602,7 +1603,8 @@ function renderResult() {
       ranking: ranking.map((q) => q.key + ":" + aff[q.key]).join(", "),
       a: Math.round(state.scores.A), b: Math.round(state.scores.B), c: Math.round(state.scores.C),
       comfort: kvStr(state.comfort), dwell: kvStr(state.dwell), fit: kvStr(state.fit),
-      stickies: state.texts.stickies.join(" / "), phiWall: state.texts.phiWall.join(" / ") });
+      stickies: state.texts.stickies.join(" / "), phiWall: state.texts.phiWall.join(" / "),
+      choices: state.choices.join(" / ") });
   }
   app.innerHTML = '<div class="card result-card"><div class="result-deco l">' + dokuPlant() + '</div><div class="result-deco r">' + dokuPlant() + "</div>" +
     '<div class="result-symbol">' + result.symbol + "</div>" +
@@ -1632,7 +1634,7 @@ function renderResult() {
     '<p class="center"><button class="ghost" id="btn-again">もう一度旅する</button></p></div>';
   document.getElementById("btn-again").onclick = () => {
     state.scores = { A: 0, B: 0, C: 0 }; state.comfort = {}; state.dwell = {}; state.fit = {}; state.history = [];
-    state.texts = { stickies: [], phiWall: [] }; state.logged = false;
+    state.texts = { stickies: [], phiWall: [] }; state.choices = []; state.logged = false;
     state.sceneIdx = 0; state.taskIdx = 0;
     renderTop();
   };
