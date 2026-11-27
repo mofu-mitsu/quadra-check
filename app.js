@@ -1,4 +1,4 @@
-// quadra-check v6（ランキング判定＋演出改修版）
+// quadra-check v7（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -261,7 +261,7 @@ const EVENTS = {
     choices: [
       { t: "引き受ける", reaction: "「助かる！ 名簿に書いておくね」住民は嬉しそうに名前を書き込む。横から声がする。「当番はね、一般的には公平に回すものよ。よく決心したわね」ドクダミが一つ増えた。", score: { B: -10, C: 5 }, doku: true },
       { t: "「隔週なら」と条件をつける", reaction: "「隔週ね、調整してみる」住民は名簿に小さくメモをした。", score: { B: -5 } },
-      { t: "自分の時間を優先して断る", reaction: "住民は名簿を閉じかけ、横から声が割り込む。「あら、断るのは自由よ。ただね、日曜の朝8時。名簿にはもう、あなたの名前を書きかけてあるの。段取りは組み始めてるから、そこだけ分かってちょうだい」引く気配がない。ドクダミが一つ増えた。", score: { A: -10, B: 5 }, doku: true } ] } } },
+      { t: "自分の時間を優先して断る", reaction: "住民は名簿を閉じかけ、横から声が割り込む。「あら、断るのは自由よ。ただね、日曜の朝8時。名簿にはもう、あなたの名前を書きかけてあるの。段取りは組み始めてるから、それも踏まえてもう一度考えてみてちょうだい」引く気配がない。ドクダミが一つ増えた。", score: { A: -10, B: 5 }, doku: true } ] } } },
   omega: { nodes: { start: { title: "扉の前の声",
     text: "扉の前に立つと、中から静かな声がする。「どうぞ。……その前に一つだけ。あなたは、なぜこの扉の内側に来たいと思ったの？」",
     choices: [
@@ -676,13 +676,13 @@ function propHTML(qkey) {
   if (qkey === "alpha") return '<div class="prop"><div class="prop-title">🧷 工房のメモ板（付箋はドラッグで貼り直せる）</div><div class="sticky-board" id="sticky-board"></div>' +
     '<div class="sticky-tools"><input type="text" id="sticky-text" maxlength="24" placeholder="自由に書き込んで貼れる"><button class="ghost prop-btn" id="sticky-write">書いて貼る</button><button class="ghost prop-btn" id="prop-btn">付箋を貼る</button></div>' +
     '<span class="small" id="prop-count">貼った付箋：0枚</span><div class="small" id="prop-line"></div>' +
-    '<div class="prop-title sound-title">🔔 音の出るボタン（押して遊べる）</div><div class="sound-board" id="sound-board"></div><div class="small" id="sound-count">鳴らした回数：0回</div></div>';
-  if (qkey === "beta") return '<div class="prop"><div class="prop-title">🥁 集会の太鼓（ドラッグで移動、タップで叩く）</div><button class="prop-emoji" id="prop-btn" aria-label="太鼓を叩く">🥁</button><div class="small" id="prop-count">叩いた回数：0</div></div>';
-  if (qkey === "gamma") return '<div class="prop"><div class="prop-title">🪙 コインの山（ドラッグで動かせる）</div><div class="coin-stage" id="coin-stack"></div><button class="ghost prop-btn" id="prop-btn">コインを積む</button> <span class="small" id="prop-count">積んだコイン：0枚</span></div>';
+    '<div class="prop-title sound-title">🎲 謎のボタン（何が出るか分からない）</div><div class="sound-board" id="sound-board"></div><div class="small" id="sound-count">出た回数：0回</div></div>';
+  if (qkey === "beta") return '<div class="prop"><div class="prop-title">🥁 集会の太鼓（ドラッグで移動、タップで叩く）</div><button class="prop-emoji" id="prop-btn" aria-label="太鼓を叩く">🥁</button><div class="small" id="prop-count">叩いた回数：0</div><div class="small" id="prop-line"></div></div>';
+  if (qkey === "gamma") return '<div class="prop"><div class="prop-title">🪙 コインの山（ドラッグで動かせる）</div><div class="coin-stage" id="coin-stack"></div><button class="ghost prop-btn" id="prop-btn">コインを積む</button> <span class="small" id="prop-count">積んだコイン：0枚</span><div class="small" id="prop-line"></div></div>';
   if (qkey === "delta" || qkey === "psi") return '<div class="prop"><div class="prop-title">🌿 ドクダミ摘み（株をドラッグで引き抜ける）</div><button class="ghost prop-btn" id="prop-btn">ドクダミを摘む</button> <span class="small" id="prop-count">摘んだ数：0</span><div class="small" id="prop-line"></div></div>';
   if (qkey === "phi") return '<div class="prop"><div class="prop-title">🪧 集いの看板（ドラッグで真っ直ぐに直す）</div><div class="sign-board tilted" id="sign-board">今のままじゃダメだ</div><button class="ghost prop-btn" id="prop-btn">看板を直す</button> <span class="small" id="prop-count">直した回数：0</span>' +
     '<div class="prop-title" style="margin-top:12px">✊ 言いたいこと壁（反骨も不満も、自由に書ける）</div><div class="phi-wall" id="phi-wall"></div>' +
-    '<div class="phi-tools"><input type="text" id="phi-text" maxlength="40" placeholder="嫌なルール、言いたいこと、なんでも"><button class="ghost prop-btn" id="phi-write">壁に書く</button></div>' +
+    '<div class="phi-tools"><textarea id="phi-text" rows="2" maxlength="120" placeholder="嫌なルール、言いたいこと、なんでも（改行できる）"></textarea><button class="ghost prop-btn" id="phi-write">壁に書く</button></div>' +
     '<span class="small" id="phi-count">書いた数：0</span><div class="small" id="prop-line"></div></div>';
   if (qkey === "chi") return '<div class="prop"><div class="prop-title">🍵 庭のお茶（急須をドラッグして湯呑みの上へ）</div><div class="tea-stage" id="tea-stage"><div class="tea-stream" id="tea-stream"></div><div class="tea-pot" id="tea-pot"><div class="tea-pot-inner">' + potSVG() + '</div></div><div class="tea-cup" id="tea-cup">' + cupSVG() + '</div></div><button class="ghost prop-btn" id="prop-btn">お茶を注ぐ</button> <span class="small" id="prop-count">飲んだ杯数：0</span><div class="small" id="prop-line">急須が温まっている。湯呑みは置き場所を変えられて、ダブルタップか長押しで飲める。誰も急かさない。</div></div>';
   if (qkey === "omega") return '<div class="prop"><div class="prop-title">🚪 サロンの扉（取っ手をドラッグで引いてもいい）</div><div class="door-stage" id="door-stage"><div class="door-handle" id="door-handle"></div></div><button class="ghost prop-btn" id="prop-btn">扉をノックする</button> <span class="small" id="prop-count">ノック：0回</span><div class="small" id="prop-line"></div></div>';
@@ -731,7 +731,10 @@ function bindProp(qkey) {
         bumpEngage();
       } });
       count.textContent = "貼った付箋：" + n + "枚";
+      if (line && Math.random() < 0.2) line.textContent = ["住人「それ、いい貼り方」", "住人「色の組み合わせ、攻めてるね」", "住人「お、その言葉好きだな」", "住人「貼るたび、工房が少し広くなる気がする」"][n % 4];
       if (n === 5 && line) line.textContent = "住人「お、貼るねえ。板が賑やかになるの、好きだな」";
+      if (n === 8 && line) line.textContent = "住人「8枚。……そろそろ壁が足りないかも」";
+      if (n === 18 && line) line.textContent = "住人「18枚！ 付箋の森だね、ここ」";
       if (n === 12 && line) line.textContent = "住人「12枚！ もうメモ板じゃなくて作品だね、これ」";
       bumpEngage();
     }
@@ -769,25 +772,62 @@ function bindProp(qkey) {
       const g = a.createGain(); g.gain.value = vol || 0.2;
       src.connect(g); g.connect(a.destination); src.start();
     }
-    const SOUNDS = [
-      { e: "🔔", label: "ベル", play: () => { tone(1318, 0, 0.5, "sine", 0.12); tone(1760, 0.02, 0.4, "sine", 0.06); } },
-      { e: "🎵", label: "メロディ", play: () => { [523, 659, 784, 1046].forEach((f, i) => tone(f, i * 0.11, 0.16, "triangle", 0.14)); } },
-      { e: "💥", label: "バーン", play: () => { noiseBurst(0.25, 0.25); tone(140, 0, 0.25, "square", 0.1, 45); } },
-      { e: "🐤", label: "ピヨ", play: () => { tone(1250, 0, 0.09, "sine", 0.12, 1750); tone(1250, 0.13, 0.09, "sine", 0.12, 1750); } },
-      { e: "🚀", label: "シュイーン", play: () => tone(220, 0, 0.45, "sawtooth", 0.06, 1450) },
-      { e: "🥁", label: "ドン", play: () => tone(160, 0, 0.22, "sine", 0.22, 48) }
+    // 謎のボタン：効果音・飛ぶ絵文字/顔文字・謎の短文がランダムに出る（予測不能がαの遊び）
+    const FLYERS = ["✨", "⭐", "🎈", "🫧", "🍬", "🎀", "🪄", "🐛", "🌸", "🍄", "🛸", "👾", "🧸", "💫", "(・∀・)", "(｀・ω・´)", "( ˘ω˘ )", "ฅ(´꒳`ฅ)", "(ﾉ´∀`)ﾉ", "( ´ ▽ ` )", "Σ(ﾟДﾟ)", "(¬_¬)", "(´ε` )", "٩(ˊᗜˋ*)و"];
+    const MYSTERY_LINES = [
+      "住人「今の音、なに？」", "住人「出たね。何かは分からないけど、出たね」", "住人「それ、昨日は出なかったやつだ」",
+      "（どこかで何かが光った）", "住人「記録しとく？ ……やめとこ、謎のままがいい」", "（工房の奥で、誰かが拍手した）",
+      "住人「当たり？ ハズレ？ 決めるのは君だよ」", "（謎の振動。机が少し揺れた）", "住人「もう一回押してみ？ 多分、別のことが起きる」",
+      "（天井から紙吹雪みたいな何かが1枚だけ落ちてきた）", "住人「今のは新作。名前はまだない」", "（時計の針が一瞬、逆に回った気がした）",
+      "住人「ふふ、運がいいね。……何に運がいいのかは謎だけど」", "（床の付箋が1枚、勝手に裏返った）", "住人「そのボタン、たまに機嫌がいい日があるんだ」"
     ];
-    if (sboard) SOUNDS.forEach((sd) => {
+    const PENTA = [523, 587, 659, 784, 880];
+    const PATTERNS = [
+      () => { [0, 1, 2].forEach((i) => tone(PENTA[Math.floor(Math.random() * PENTA.length)], i * 0.09, 0.14, "triangle", 0.13)); },
+      () => tone(300, 0, 0.4, "sine", 0.14, 1400),
+      () => tone(1200, 0, 0.4, "sine", 0.12, 240),
+      () => { tone(1500, 0, 0.07, "sine", 0.11, 1900); tone(1500, 0.11, 0.07, "sine", 0.11, 1900); tone(1500, 0.22, 0.1, "sine", 0.11, 2100); },
+      () => { noiseBurst(0.2, 0.2); tone(150, 0, 0.25, "square", 0.09, 45); },
+      () => { [1046, 880, 784, 659].forEach((f, i) => tone(f, i * 0.06, 0.12, "sine", 0.1)); },
+      () => tone(90, 0, 0.3, "sine", 0.22, 40),
+      () => { tone(700, 0, 0.08, "square", 0.06); tone(950, 0.1, 0.08, "square", 0.06); tone(620, 0.2, 0.14, "square", 0.06); }
+    ];
+    let lastLine = -1;
+    function spawnFlyers() {
+      const prop = sboard ? sboard.closest(".prop") : null;
+      if (!prop) return;
+      const num = 1 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < num; i++) {
+        const f = document.createElement("span");
+        f.className = "fly-item";
+        f.textContent = FLYERS[Math.floor(Math.random() * FLYERS.length)];
+        f.style.left = (5 + Math.random() * 85) + "%";
+        f.style.fontSize = (17 + Math.random() * 15) + "px";
+        prop.appendChild(f);
+        setTimeout(() => f.remove(), 1700);
+      }
+    }
+    const MYSTERY_BTNS = ["❓", "🎁", "🌀", "📦", "🫧", "✨"];
+    if (sboard) MYSTERY_BTNS.forEach((em) => {
       const b = document.createElement("button");
       b.className = "sound-btn"; b.type = "button";
-      b.innerHTML = '<span class="sound-emoji">' + sd.e + '</span><span class="sound-label">' + sd.label + "</span>";
+      b.innerHTML = '<span class="sound-emoji">' + em + '</span><span class="sound-label">謎</span>';
       b.onclick = () => {
-        sd.play();
+        PATTERNS[Math.floor(Math.random() * PATTERNS.length)]();
+        spawnFlyers();
         snum++;
-        if (scount) scount.textContent = "鳴らした回数：" + snum + "回";
+        if (scount) scount.textContent = "出た回数：" + snum + "回";
         b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
-        if (snum === 10 && line) line.textContent = "住人「鳴らすねえ。何か生まれそう、その音」";
-        if (snum === 25 && line) line.textContent = "住人「25回！ 工房が楽器になってきた」";
+        if (line) {
+          if (snum === 10) line.textContent = "住人「10回。……何が出たか、もう誰にも分からないね」";
+          else if (snum === 25) line.textContent = "住人「25回！ 工房の謎、深まるばかりだね」";
+          else if (Math.random() < 0.35) {
+            let li = Math.floor(Math.random() * MYSTERY_LINES.length);
+            if (li === lastLine) li = (li + 1) % MYSTERY_LINES.length;
+            lastLine = li;
+            line.textContent = MYSTERY_LINES[li];
+          }
+        }
         bumpEngage();
       };
       sboard.appendChild(b);
@@ -795,10 +835,16 @@ function bindProp(qkey) {
     return;
   }
   if (qkey === "beta") {
+    const drumLines = { 3: "隣の人「お、いい音」", 10: "隣の人「その調子！ もっと大きく」", 18: "芋虫「……太鼓の振動は、分類上は『地響き』に近い。悪くない」", 25: "（旗持ちが振り返って、頷いた）", 40: "隣の人「もう列の一員だな、あんた」", 60: "（演説が始まった。太鼓は止まらない）" };
+    const wormLines = ["芋虫「音の大きさと一体感は比例する、らしい」", "芋虫「……叩き方が雑だ。だが熱はある」", "芋虫「記録：太鼓、よく響いている」"];
     btn.onclick = () => {
       n++;
       btn.classList.remove("shake"); void btn.offsetWidth; btn.classList.add("shake");
       count.textContent = "叩いた回数：" + n + (n >= 5 ? "（列の声が少しそろってきた）" : "");
+      if (line) {
+        if (drumLines[n]) line.textContent = drumLines[n];
+        else if (n > 10 && Math.random() < 0.12) line.textContent = wormLines[Math.floor(Math.random() * wormLines.length)];
+      }
     };
     makeDraggable(btn, { onFirstDrag: dragHook });
     return;
@@ -824,11 +870,16 @@ function bindProp(qkey) {
         setTimeout(() => el.classList.remove("settling"), 340);
       } });
       count.textContent = "積んだコイン：" + n + "枚";
+      if (line) {
+        if (n === 5) line.textContent = "店主「積むねえ。……崩すなよ」";
+        else if (n === 12) line.textContent = "店主「その山、ちょっとした品物が買える額だ」";
+        else if (n === 20) line.textContent = "店主「あんた、貯めるのも商売のうちだと思ってるクチだね」";
+      }
     };
     return;
   }
   if (qkey === "delta" || qkey === "psi") {
-    const lines = ["摘んだ。……なのに、増えた気がする", "根が残るからね。摘んでも増えるのよ", "摘んだ分だけ、声が近くなった気がする", "摘む手つきを、どこかで見られている気がする"];
+    const lines = ["摘んだ。……なのに、増えた気がする", "根が残るからね。摘んでも増えるのよ", "摘んだ分だけ、声が近くなった気がする", "摘む手つきを、どこかで見られている気がする", "声「あら、摘むのね。……根は残るけど」", "摘んだ先から、もう芽が出ている", "声「丁寧に摘むのね。そういう人、嫌いじゃないわよ」", "指先に、ドクダミの匂いがついた"];
     dokuPluckSink = () => {
       n++;
       count.textContent = "摘んだ数：" + n;
@@ -902,10 +953,12 @@ function bindProp(qkey) {
       if (wCount) wCount.textContent = "書いた数：" + posts;
       if (line) {
         if (/ルール|決まり|当番|段取り|命令|強制|同調/.test(v)) line.textContent = "参加者「分かる。そういうの、声に出していこう」";
+        else if (/上司|先生|親|店長|リーダー/.test(v)) line.textContent = "参加者「身近なやつほど、声に出しにくいよな」";
         else if (v.length >= 20) line.textContent = "参加者「長文だね。……溜まってたんだな」";
         else if (posts === 1) line.textContent = "参加者「お、書いたね。……いいよ、その調子」";
         else if (posts === 3) line.textContent = "参加者「壁が賑やかになってきた。あんた、こっち側だね」";
-        else line.textContent = "参加者「うん、壁に残った。それでいい」";
+        else if (posts === 5) line.textContent = "参加者「5枚目。……もう常連だな、あんた」";
+        else line.textContent = ["参加者「うん、壁に残った。それでいい」", "参加者「読んだよ。消さないでおく」", "参加者「字が大きいね。怒ってる？ ……いい怒りだ」"][posts % 3];
       }
       [2, 4].forEach((th) => {
         if (posts === th && !phiBonusDone[th]) {
@@ -915,7 +968,6 @@ function bindProp(qkey) {
       });
     }
     if (wBtn) wBtn.onclick = phiPost;
-    if (wInp) wInp.addEventListener("keydown", (e) => { if (e.key === "Enter") phiPost(); });
     return;
   }
   if (qkey === "chi") {
@@ -934,7 +986,7 @@ function bindProp(qkey) {
       teaState = "full";
       stage.classList.remove("pouring");
       cup.classList.add("full");
-      line.textContent = "注いだ。湯気が立っている。……誰も何も言わない。";
+      line.textContent = ["注いだ。湯気が立っている。……誰も何も言わない。", "注いだ。湯の音だけが、やけに大きく聞こえた。"][Math.floor(Math.random() * 2)];
       btn.textContent = "飲む";
     }
     function drinkTea() {
@@ -946,7 +998,7 @@ function bindProp(qkey) {
         teaState = "empty";
         n++;
         count.textContent = "飲んだ杯数：" + n;
-        line.textContent = "……温かい。何も起きない、ということが起きている。";
+        line.textContent = ["……温かい。何も起きない、ということが起きている。", "……温かい。誰も急かさないから、冷めるまで待てる。", "住人「おいしい？ ……うん、それでいいの」"][n % 3];
         btn.textContent = "おかわりを注ぐ";
       }, 850);
     }
@@ -1003,7 +1055,7 @@ function bindProp(qkey) {
     return;
   }
   if (qkey === "omega") {
-    const replies = ["（……静かだ。聞こえていないのかもしれない）", "（中から、静かな声）「どなた？」", "（声）「ノックは2回まで、と決まっているの」", "（声）「……気が向いたら、開けるわ」", "（声）「その根気、嫌いじゃないわよ」"];
+    const replies = ["（……静かだ。聞こえていないのかもしれない）", "（中から、静かな声）「どなた？」", "（声）「ノックは2回まで、と決まっているの」", "（中から紙の擦れる音。誰かが何か読んでいる）", "（声）「……気が向いたら、開けるわ」", "（声）「開ける理由が、まだ足りないの」", "（声）「……しつこい客は、嫌いじゃないけどね」", "（声）「その根気、嫌いじゃないわよ」"];
     const door = document.getElementById("door-stage");
     const handle = document.getElementById("door-handle");
     const darlingLines = ["ダーリンちゃん「まだ叩くの？ もう開いてるわよ♡」", "ダーリンちゃん「その根気、値切りの場で使えたら最強だったのに♡」", "ダーリンちゃん「はいはい、入って入って。お茶くらい出すわ♡」"];
@@ -1015,8 +1067,14 @@ function bindProp(qkey) {
         if (darlingOut) line.textContent = darlingLines[(n - 101) % darlingLines.length];
         else if (n === 100) {
           darlingOut = true;
-          if (door) door.classList.add("open");
-          line.textContent = "（扉が、静かに開いた）ダーリンちゃん「……そこまで叩く人間、初めて見たわ。根気だけは認めてあげる、ダーリン♡ 中、見ていく？」";
+          if (door) {
+            door.classList.add("open");
+            const pop = document.createElement("span");
+            pop.className = "darling-pop";
+            pop.textContent = "🥺";
+            door.appendChild(pop);
+          }
+          line.textContent = "（扉が開いて、ダーリンちゃんが飛び出してきた）「……そこまで叩く人間、初めて見たわ。根気だけは認めてあげる、ダーリン♡ 中、見ていく？」";
         }
         else if (n === 77) line.textContent = "（声）「……あと少しで、何か起きるかもね」";
         else if (n === 50) line.textContent = "（声）「50回。……何が出ると思ってるの？」";
@@ -1225,10 +1283,23 @@ function renderWait(t, head) {
   app.innerHTML = '<div class="card">' + head + "<h2>" + t.title + "</h2><p>" + t.text + "</p>" +
     '<div class="waitbar"><div id="waitfill"></div></div>' +
     '<p class="center"><button class="ghost" id="mash">様子を見る</button></p>' +
-    '<p class="small center">押した回数：<span id="mashcount">0</span></p></div>';
+    '<p class="small center">押した回数：<span id="mashcount">0</span></p>' +
+    '<p class="small center" id="mashline"></p></div>';
   bindBack();
   let clicks = 0;
-  document.getElementById("mash").onclick = () => { clicks++; document.getElementById("mashcount").textContent = clicks; };
+  const MASH_LINES = ["（遠くで太鼓の音がする）", "（誰かが付箋を落とした）", "（時計の秒針の音だけが聞こえる）", "（隣の部屋から話し声）", "（風でカーテンが揺れた）", "（誰かの足音が通り過ぎた）", "（小さな羽虫が、光の周りを回っている）", "（遠くで扉の閉まる音）", "（自分の呼吸の音が、やけに大きい）", "（誰かがくしゃみをした）", "（床に落ちた何かが、からんと鳴った）", "（誰かが鼻歌を歌っている。曲は分からない）"];
+  let lastMash = -1;
+  document.getElementById("mash").onclick = () => {
+    clicks++;
+    document.getElementById("mashcount").textContent = clicks;
+    const ml = document.getElementById("mashline");
+    if (ml) {
+      let li = Math.floor(Math.random() * MASH_LINES.length);
+      if (li === lastMash) li = (li + 1) % MASH_LINES.length;
+      lastMash = li;
+      ml.textContent = MASH_LINES[li];
+    }
+  };
   let pct = 0;
   const iv = setInterval(() => { pct += 4; const f = document.getElementById("waitfill");
     if (f) f.style.width = Math.min(100, pct) + "%";

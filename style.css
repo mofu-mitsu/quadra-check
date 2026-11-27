@@ -373,3 +373,32 @@ body, button, input, .choice, .sticky, .sound-btn { touch-action: manipulation; 
   flex: 1 1 150px; padding: 7px 10px; border: 1.5px solid var(--line); border-radius: 10px;
   font-size: .92em; background: #fffdf4; color: var(--ink);
 }
+
+/* ---- v7: 謎のボタンの飛びもの ---- */
+.prop { position: relative; }
+.fly-item {
+  position: absolute; bottom: 6px; z-index: 5; pointer-events: none;
+  animation: fly-up 1.6s ease-out forwards; white-space: nowrap;
+}
+@keyframes fly-up {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  12% { opacity: 1; }
+  100% { transform: translateY(-190px) rotate(24deg); opacity: 0; }
+}
+/* ---- v7: ダーリンちゃん飛び出し ---- */
+.darling-pop {
+  position: absolute; left: 50%; top: 34%; z-index: 4; font-size: 46px; line-height: 1;
+  animation: darling-pop .7s cubic-bezier(.34, 1.56, .64, 1) forwards;
+}
+@keyframes darling-pop {
+  0% { transform: translate(-50%, 34%) scale(.2); opacity: 0; }
+  60% { opacity: 1; }
+  100% { transform: translate(-50%, -8%) scale(1); opacity: 1; }
+}
+/* ---- v7: Φ壁の改行保持と入力欄 ---- */
+.phi-note { white-space: pre-line; text-align: left; }
+.phi-tools textarea {
+  flex: 1 1 150px; padding: 7px 10px; border: 1.5px solid var(--line); border-radius: 10px;
+  font-size: .92em; background: #fffdf4; color: var(--ink); font-family: inherit; resize: vertical;
+}
+#mashline { min-height: 1.6em; }
