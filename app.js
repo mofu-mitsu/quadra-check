@@ -1,4 +1,4 @@
-// quadra-check v7（ランキング判定＋演出改修版）
+// quadra-check v8（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -1407,7 +1407,7 @@ function barHTML(leftLabel, rightLabel, v) {
   return '<div class="bar-row"><span class="bar-label">' + leftLabel + '</span><div class="bar-track"><div class="bar-fill" style="' + fill + '"></div></div><span class="bar-label r">' + rightLabel + "</span></div>";
 }
 function affinityScores(A, B, C) {
-  // 総合スコア＝軸成分（正規化して寄与を抑える・±35）＋場面成分（居心地±35＋イベントfit±25＋滞在±10＝±70）
+  // 総合スコア＝軸成分（±60）＋場面成分（居心地±30＋イベントfit±20＋滞在±10＝±60）※v8で軸の重みを引き上げ（35:70→60:60）
   const axes = [A, B, C];
   const dwells = Object.values(state.dwell).slice().sort((a, b) => a - b);
   const median = dwells.length ? (dwells[Math.floor((dwells.length - 1) / 2)] + dwells[Math.ceil((dwells.length - 1) / 2)]) / 2 : 0;
@@ -1415,10 +1415,10 @@ function affinityScores(A, B, C) {
   Object.values(QUADRAS).forEach((q) => {
     let axisRaw = 0;
     q.signs.forEach((sg, i) => { axisRaw += sg * axes[i]; });
-    const axisComp = axisRaw / 300 * 35;
+    const axisComp = axisRaw / 300 * 60;
     const cv = state.comfort[q.key];
-    const comfortComp = typeof cv === "number" ? (cv === 2 ? 35 : cv === 0.5 ? 12 : -35) : 0;
-    const eventComp = Math.max(-25, Math.min(25, (state.fit[q.key] || 0) * 2.5));
+    const comfortComp = typeof cv === "number" ? (cv === 2 ? 30 : cv === 0.5 ? 10 : -30) : 0;
+    const eventComp = Math.max(-20, Math.min(20, (state.fit[q.key] || 0) * 2));
     const d = state.dwell[q.key];
     let dwellComp = 0;
     if (typeof d === "number" && dwells.length) {
