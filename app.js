@@ -1,4 +1,4 @@
-// quadra-check v16（ランキング判定＋演出改修版）
+// quadra-check v17（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -492,7 +492,7 @@ const state = { name: "", selfType: "", scores: { A: 0, B: 0, C: 0 },
 
 // ---- 診断ログ送信（GAS→Googleスプレッドシート） ----
 // みつきがデプロイしたWebアプリURLをここに貼る（空の間は送信しない）
-const GAS_URL = "";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxBmvD2FbyJokATsWZUcbD-BeOdSaAGaoTob1SA98jiYpWYToegrD5-yuXubekmySrCfg/exec";
 function sendLog(payload) {
   if (!GAS_URL) return;
   try {
