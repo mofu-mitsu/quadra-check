@@ -1,4 +1,4 @@
-// quadra-check v10（ランキング判定＋演出改修版）
+// quadra-check v11（ランキング判定＋演出改修版）
 // 3軸（A 周辺-/中心+、B 民主-/貴族+、C 主観-/客観+）の符号で8クアドラにマッピングする。
 
 const QUADRAS = {
@@ -869,7 +869,7 @@ function bindProp(qkey) {
       pre.className = "aa-pop";
       pre.textContent = AA_BLOCKS[Math.floor(Math.random() * AA_BLOCKS.length)];
       prop.appendChild(pre);
-      setTimeout(() => pre.remove(), 3200);
+      setTimeout(() => pre.remove(), 2600);
     }
     const MYSTERY_BTNS = ["❓", "🎁", "🌀", "📦", "🫧", "✨"];
     if (sboard) MYSTERY_BTNS.forEach((em) => {
